@@ -1,0 +1,10 @@
+# CODEOWNERS — define quem revisa por padrão os PRs.
+# A org fintureapp ainda não tem um time definido para este repo.
+# Substituir pelo time responsável quando criado, por exemplo:
+#
+# *        @fintureapp/TIME_RESPONSAVEL
+#
+# Exemplos de ownership por área (descomentar e ajustar quando houver time):
+# /src/lib/        @fintureapp/TIME_RESPONSAVEL
+# /.github/        @fintureapp/TIME_RESPONSAVEL
+# /docs/           @fintureapp/TIME_RESPONSAVEL
