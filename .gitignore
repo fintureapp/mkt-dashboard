@@ -1,0 +1,79 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# --- dependencies ---
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# --- testing ---
+/coverage
+
+# --- next.js ---
+/.next/
+/out/
+
+# --- production / build ---
+/build
+*.tsbuildinfo
+next-env.d.ts
+
+# --- debug logs ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# --- env / secrets (NUNCA versionar) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+credentials.json
+service-account*.json
+*token.json
+*secrets.*
+*.secret
+
+# --- bancos / dumps / backups ---
+*.sqlite
+*.db
+*.dump
+*.bak
+
+# --- dados sensíveis / exports (marketing & CRM) ---
+data/raw/
+data/processed/
+data/private/
+exports/
+downloads/
+leads/
+crm_exports/
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.avro
+*.jsonl
+# Snapshot de CRM com PII real (ver SECURITY_NOTES.md)
+plano-saude-snapshot.json
+
+# Permitir apenas dados sintéticos / exemplos pequenos
+!data/sample/
+!data/sample/**
+
+# --- vercel ---
+.vercel
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db

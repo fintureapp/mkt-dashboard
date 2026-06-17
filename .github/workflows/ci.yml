@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Permissões mínimas — somente leitura do conteúdo.
+permissions:
+  contents: read
+
+jobs:
+  lint-typecheck-build:
+    name: Lint, typecheck e build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (Biome)
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+        env:
+          # Valores dummy só para o build passar — NUNCA usar secrets reais aqui.
+          # Substitua por secrets do GitHub se o build precisar de credenciais válidas.
+          META_ACCESS_TOKEN: dummy_token_for_ci_only_min_20_chars
+          META_AD_ACCOUNT_ID: "0"
+          META_GRAPH_API_VERSION: v21.0
+          BASIC_AUTH_USER: ci
+          BASIC_AUTH_PASS: ci_dummy_pass
