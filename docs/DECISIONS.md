@@ -20,10 +20,19 @@ onde havia ambiguidade.
   - `tsconfig.tsbuildinfo`, `next-env.d.ts` — artefatos de build (gerados).
   - `src/app/favicon.ico` — binário; a API de push usada lida com texto. Pode ser
     re-adicionado manualmente; não afeta build (Next gera fallback).
+  - `package-lock.json` — **propositalmente adiado** deste import. São 4088 linhas
+    de JSON gerado com hashes de integridade; transcrevê-lo via API arriscaria
+    corromper um hash e quebrar `npm ci`. O arquivo existe no disco e deve ser
+    commitado por um cliente Git real num PR de follow-up. Enquanto isso, o CI usa
+    `npm install` em vez de `npm ci`. **TODO:** commitar o lockfile e voltar o CI
+    para `npm ci`.
 - **`.env.example`:** ampliado com as variáveis faltantes detectadas no código e em
   `.env.local` (Chatwoot, plano-saúde), todas com placeholder `replace_me`.
 - **CLAUDE.md:** preserva o import `@AGENTS.md` original e adiciona as instruções
   específicas para Claude Code.
+- **DESIGN.md:** versionado como **resumo condensado** do design system (o original
+  no disco traz um bloco extenso de tokens em frontmatter YAML). Os tokens efetivos
+  vivem em `src/app/globals.css`; o resumo preserva as regras normativas.
 - **CODEOWNERS:** a org `fintureapp` não tem times definidos (consulta retornou
   vazio). Usado placeholder comentado; nenhum usuário/time inventado.
 - **Branch protection / secret scanning / push protection / Dependabot:** não

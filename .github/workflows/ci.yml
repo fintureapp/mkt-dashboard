@@ -25,7 +25,10 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        # Usamos `npm install` (e não `npm ci`) porque o package-lock.json ainda
+        # não foi versionado neste import inicial (ver docs/DECISIONS.md). Trocar
+        # para `npm ci` assim que o lockfile for commitado por um cliente Git real.
+        run: npm install --no-audit --no-fund
 
       - name: Lint (Biome)
         run: npm run lint
