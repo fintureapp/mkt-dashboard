@@ -1,14 +1,9 @@
 import { Suspense } from 'react';
+import { FunnelPipeline, type FunnelStage } from '@/components/funnel-pipeline';
 import { KpiCard } from '@/components/kpi-card';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  aggregate,
-  type BucketAgg,
-  effectiveCRMPeriod,
-  loadSnapshot,
-  type PlanoSnapshot,
-} from '@/lib/plano-saude';
 import { parsePeriodFromSearchParams, periodLabel, priorPeriod } from '@/lib/period';
+import { aggregate, effectiveCRMPeriod, loadSnapshot, type PlanoSnapshot } from '@/lib/plano-saude';
 
 type SP = Promise<{ since?: string; until?: string }>;
 
@@ -66,65 +61,65 @@ async function Report({ searchParams }: { searchParams: SP }) {
   const cur = aggregate(snapshot.cards, current);
   const prev = aggregate(snapshot.cards, prior);
 
+  const stages: FunnelStage[] = [
+    {
+      label: 'Cotações enviadas',
+      value: cur.cotacoes.value,
+      count: cur.cotacoes.count,
+      prior: prev.cotacoes.value || null,
+      color: 'var(--color-chart-2)',
+    },
+    {
+      label: 'Propostas quentes',
+      value: cur.quentes.value,
+      count: cur.quentes.count,
+      prior: prev.quentes.value || null,
+      color: 'var(--color-chart-3)',
+    },
+    {
+      label: 'Fechamentos',
+      value: cur.fechamento.value,
+      count: cur.fechamento.count,
+      prior: prev.fechamento.value || null,
+      color: 'var(--color-chart-4)',
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-8">
-      <MetricGroup
-        title="Cotações enviadas"
-        subtitle="com valor informado (Enviado + Em Cotação)"
-        current={cur.cotacoes}
-        prior={prev.cotacoes}
-      />
-      <MetricGroup
-        title="Propostas quentes"
-        subtitle="estágio Negociação"
-        current={cur.quentes}
-        prior={prev.quentes}
-      />
-      <MetricGroup
-        title="Fechamentos"
-        subtitle="estágio Fechado - Ganho"
-        current={cur.fechamento}
-        prior={prev.fechamento}
-      />
+      {/* Pipeline em R$ — a estrela: quanto está a ganhar vs. quanto fechou */}
+      <section aria-label="Pipeline" className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <KpiCard
+          variant="hero"
+          label="A ganhar"
+          value={cur.quentes.value || null}
+          prior={prev.quentes.value || null}
+          format="currency"
+          hint="propostas quentes · estágio Negociação"
+        />
+        <KpiCard
+          variant="hero"
+          label="Fechado"
+          value={cur.fechamento.value || null}
+          prior={prev.fechamento.value || null}
+          format="currency"
+          hint="estágio Fechado - Ganho"
+        />
+      </section>
+
+      {/* Funil de valor */}
+      <section className="flex flex-col gap-4">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="font-display font-semibold text-foreground text-lg tracking-tight">
+            Funil de valor
+          </h2>
+          <span className="text-muted-foreground text-xs">pipeline em R$ por etapa</span>
+        </div>
+        <FunnelPipeline stages={stages} />
+      </section>
+
       <SnapshotFooter snapshot={snapshot} />
     </div>
-  );
-}
-
-function MetricGroup({
-  title,
-  subtitle,
-  current,
-  prior,
-}: {
-  title: string;
-  subtitle: string;
-  current: BucketAgg;
-  prior: BucketAgg;
-}) {
-  return (
-    <section className="flex flex-col gap-4">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="font-display font-semibold text-foreground text-lg tracking-tight">{title}</h2>
-        <span className="text-muted-foreground text-xs">{subtitle}</span>
-      </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <KpiCard
-          variant="hero"
-          label="Quantidade"
-          value={current.count}
-          prior={prior.count}
-          format="integer"
-        />
-        <KpiCard
-          variant="hero"
-          label="Valor total"
-          value={current.value || null}
-          prior={prior.value || null}
-          format="currency"
-        />
-      </div>
-    </section>
   );
 }
 
@@ -155,15 +150,14 @@ function HeaderSkeleton() {
 function ReportSkeleton() {
   return (
     <div className="flex flex-col gap-8">
-      {[0, 1, 2].map((g) => (
-        <section key={g} className="flex flex-col gap-4">
-          <Skeleton className="h-5 w-48" />
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Skeleton className="h-44 rounded-lg" />
-            <Skeleton className="h-44 rounded-lg" />
-          </div>
-        </section>
-      ))}
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Skeleton className="h-44 rounded-lg" />
+        <Skeleton className="h-44 rounded-lg" />
+      </section>
+      <section className="flex flex-col gap-4">
+        <Skeleton className="h-5 w-44" />
+        <Skeleton className="h-72 rounded-lg" />
+      </section>
     </div>
   );
 }

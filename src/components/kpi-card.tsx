@@ -76,7 +76,7 @@ export function KpiCard({
   );
 }
 
-function DeltaPill({
+export function DeltaPill({
   direction,
   delta,
 }: {
