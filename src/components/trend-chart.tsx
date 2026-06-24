@@ -16,7 +16,10 @@ export type TrendPoint = {
   date: string; // ISO date
   spend: number;
   conversions: number;
+  revenue?: number;
 };
+
+type LineMetric = 'conversions' | 'revenue';
 
 // Tokens from DESIGN.md — kept inline for Recharts SVG attrs
 const COLOR = {
@@ -28,11 +31,21 @@ const COLOR = {
   hover: '#2a292880', // Lifted Charcoal w/ alpha
 } as const;
 
-export function TrendChart({ data }: { data: TrendPoint[] }) {
+export function TrendChart({
+  data,
+  lineMetric = 'conversions',
+  height = 'h-80',
+}: {
+  data: TrendPoint[];
+  lineMetric?: LineMetric;
+  height?: string;
+}) {
+  const lineLabel = lineMetric === 'revenue' ? 'Receita' : 'Conversões';
+
   if (data.length === 0) {
     return (
       <div
-        className="flex h-80 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground text-sm"
+        className={`flex ${height} items-center justify-center rounded-lg border border-border bg-card text-muted-foreground text-sm`}
         role="img"
         aria-label="Sem dados de tendência no período selecionado"
       >
@@ -43,9 +56,9 @@ export function TrendChart({ data }: { data: TrendPoint[] }) {
 
   return (
     <div
-      className="h-80 rounded-lg border border-border bg-card p-4"
+      className={`${height} rounded-lg border border-border bg-card p-4`}
       role="img"
-      aria-label="Gráfico de tendência diária: investimento e conversões"
+      aria-label={`Gráfico de tendência diária: investimento e ${lineLabel.toLowerCase()}`}
     >
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 10, right: 12, bottom: 8, left: 0 }}>
@@ -95,19 +108,27 @@ export function TrendChart({ data }: { data: TrendPoint[] }) {
             formatter={(value, name) => {
               const num = typeof value === 'number' ? value : Number(value);
               if (name === 'spend') return [fmtCurrency(num), 'Investimento'];
+              if (name === 'revenue') return [fmtCurrency(num), 'Receita'];
               if (name === 'conversions') return [fmtInteger(num), 'Conversões'];
               return [String(value ?? ''), String(name ?? '')];
             }}
           />
-          <Bar yAxisId="left" dataKey="spend" fill={COLOR.chart1} radius={[3, 3, 0, 0]} />
+          <Bar
+            yAxisId="left"
+            dataKey="spend"
+            fill={COLOR.chart1}
+            radius={[3, 3, 0, 0]}
+            isAnimationActive={false}
+          />
           <Line
             yAxisId="right"
             type="monotone"
-            dataKey="conversions"
+            dataKey={lineMetric}
             stroke={COLOR.chart2}
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 4, fill: COLOR.chart2, stroke: COLOR.card, strokeWidth: 2 }}
+            isAnimationActive={false}
           />
         </ComposedChart>
       </ResponsiveContainer>
