@@ -16,6 +16,17 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 export function middleware(req: NextRequest) {
+  // Link público (sem login) da Visão Geral: só o token exato dispensa o basic
+  // auth. Token ausente/errado cai no fluxo normal de auth (fail-closed), então
+  // /publico/* fica escondido atrás de login enquanto PUBLIC_SHARE_TOKEN não bater.
+  const shareToken = process.env.PUBLIC_SHARE_TOKEN;
+  if (shareToken && req.nextUrl.pathname.startsWith('/publico/')) {
+    const supplied = req.nextUrl.pathname.split('/')[2] ?? '';
+    if (timingSafeEqual(supplied, shareToken)) {
+      return NextResponse.next();
+    }
+  }
+
   const expectedUser = process.env.BASIC_AUTH_USER;
   const expectedPass = process.env.BASIC_AUTH_PASS;
 

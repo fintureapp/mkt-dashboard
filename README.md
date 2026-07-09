@@ -31,6 +31,7 @@ src/
 │   │   ├── error.tsx           # error boundary
 │   │   ├── loading.tsx         # skeleton
 │   │   └── _lib/level-page.tsx # helper das páginas de nível
+│   ├── publico/[token]/page.tsx # link público (sem login) da Visão Geral
 │   ├── actions/refresh.ts      # Server Action: updateTag('meta:insights')
 │   ├── layout.tsx
 │   └── globals.css             # tokens Finture (Tailwind v4)
@@ -38,6 +39,7 @@ src/
 │   ├── ui/                     # primitivas shadcn/ui
 │   ├── kpi-card.tsx · insights-table.tsx · trend-chart.tsx · sparkline.tsx
 │   ├── funnel-pipeline.tsx · kanban-board.tsx · plano-saude-tabs.tsx
+│   ├── overview-report.tsx     # corpo da Visão Geral (usado por / e /publico)
 │   ├── period-selector.tsx · refresh-button.tsx · header*.tsx · footer.tsx
 └── lib/
     ├── meta-api.ts             # cliente Graph com 'use cache'
@@ -67,6 +69,28 @@ npm run dev
 
 Abra http://localhost:3000 → o browser pede basic auth → entre com
 `BASIC_AUTH_USER` / `BASIC_AUTH_PASS` → o dashboard carrega.
+
+### Link público da Visão Geral (sem login)
+
+Para compartilhar **apenas a Visão Geral** com terceiros (ex.: agência de mídia)
+sem exigir login, existe a rota `/publico/<token>`:
+
+- O acesso é por um **token secreto na URL** (`PUBLIC_SHARE_TOKEN`). O link é a
+  chave — quem tiver a URL vê os números (investimento, ROI, campanhas). A página
+  é **read-only**, **não indexável** (noindex) e não dá acesso às outras abas.
+- **Fail-closed:** sem `PUBLIC_SHARE_TOKEN` configurado (ou com token errado), a
+  rota cai no basic auth normal. Nada é exposto por acidente.
+- **Revogar:** troque o valor de `PUBLIC_SHARE_TOKEN` — o link antigo para de
+  funcionar na hora.
+
+Gerar um token forte:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))"
+```
+
+Defina em `.env.local` (dev) e nas env vars do Vercel (produção). O link fica
+`https://<seu-domínio>/publico/<token>`.
 
 ### Pré-requisitos manuais (token Meta)
 
@@ -134,7 +158,8 @@ Deploy no **Vercel** (App Router + Cache Components). O modelo de cache usa
 "Atualizar" dispara a Server Action `refreshInsights()` → `updateTag(...)`.
 Configurar as env vars de Production/Preview no painel do Vercel:
 `META_ACCESS_TOKEN`, `META_AD_ACCOUNT_ID`, `META_GRAPH_API_VERSION`,
-`BASIC_AUTH_USER`, `BASIC_AUTH_PASS` (+ Chatwoot / plano-saúde se usados).
+`BASIC_AUTH_USER`, `BASIC_AUTH_PASS` (+ Chatwoot / plano-saúde se usados,
++ `PUBLIC_SHARE_TOKEN` se o link público da Visão Geral estiver em uso).
 
 Não há cron / job agendado identificado neste setup inicial.
 

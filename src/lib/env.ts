@@ -6,6 +6,9 @@ const EnvSchema = z.object({
   META_GRAPH_API_VERSION: z.string().default('v21.0'),
   BASIC_AUTH_USER: z.string().min(1),
   BASIC_AUTH_PASS: z.string().min(8, 'Mínimo 8 caracteres'),
+  // Token do link público (sem login) da Visão Geral. Opcional: se ausente, a
+  // rota /publico/[token] fica fechada atrás do basic auth (fail-closed).
+  PUBLIC_SHARE_TOKEN: z.string().min(24, 'Use um valor aleatório longo (≥24 chars)').optional(),
   NEXT_PUBLIC_APP_URL: z.url().optional(),
 });
 
