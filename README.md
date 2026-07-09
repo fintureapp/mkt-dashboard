@@ -26,7 +26,8 @@ src/
 │   │   ├── campanhas/page.tsx
 │   │   ├── conjuntos/page.tsx
 │   │   ├── anuncios/page.tsx
-│   │   ├── plano-saude/page.tsx
+│   │   ├── plano-saude/page.tsx        # Visão Geral (funil de valor)
+│   │   ├── plano-saude/kanban/page.tsx # Kanban por estágio (read-only)
 │   │   ├── error.tsx           # error boundary
 │   │   ├── loading.tsx         # skeleton
 │   │   └── _lib/level-page.tsx # helper das páginas de nível
@@ -37,6 +38,7 @@ src/
 ├── components/
 │   ├── ui/                     # primitivas shadcn/ui
 │   ├── kpi-card.tsx · insights-table.tsx · trend-chart.tsx · sparkline.tsx
+│   ├── funnel-pipeline.tsx · kanban-board.tsx · plano-saude-tabs.tsx
 │   ├── overview-report.tsx     # corpo da Visão Geral (usado por / e /publico)
 │   ├── period-selector.tsx · refresh-button.tsx · header*.tsx · footer.tsx
 └── lib/
