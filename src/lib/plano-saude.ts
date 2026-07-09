@@ -23,7 +23,9 @@ export type PlanoCard = {
   /** ISO — data da tarefa de valor (proxy de "cotação enviada"), com fallback p/ criação do card */
   eventDate: string;
   hasValue: boolean;
-  tasks: string[];
+  /** origem do valor: 'campo' (Valor da cotação estruturado) ou 'tarefa' (texto livre, legado) */
+  source?: string;
+  tasks?: string[];
 };
 
 export type PlanoSnapshot = {
@@ -69,6 +71,70 @@ export function effectiveCRMPeriod(parsed: Period): Period {
 function inPeriod(eventDate: string, period: Period): boolean {
   const d = (eventDate || '').slice(0, 10);
   return d >= period.since && d <= period.until;
+}
+
+/**
+ * Ordem canônica dos estágios do funil Criteria PME (do topo ao fundo), usada
+ * para dispor as colunas do Kanban da esquerda para a direita. Estágios fora
+ * desta lista vão para o fim, em ordem alfabética.
+ */
+const STAGE_ORDER = [
+  'Novos Leads',
+  'Validação de Dados',
+  'Necessita Atendimento',
+  'Enviado para Cotação',
+  'Em Cotação / Atendimento Humano',
+  'Negociação',
+  'Fechado - Ganho',
+  'Fechado - Perdido',
+] as const;
+
+function stageRank(stage: string): number {
+  const i = (STAGE_ORDER as readonly string[]).indexOf(stage);
+  return i === -1 ? STAGE_ORDER.length : i;
+}
+
+export type KanbanColumn = {
+  stage: string;
+  /** bucket predominante do estágio (para a cor); null se não houver cards */
+  bucket: PlanoBucket | null;
+  count: number;
+  value: number;
+  cards: PlanoCard[];
+};
+
+/**
+ * Agrupa os cards do snapshot por estágio do CRM para a visualização Kanban.
+ * Diferente de `aggregate` (que alimenta o funil de valor e só conta cotações
+ * com valor informado), o quadro mostra TODOS os cards do estágio no período —
+ * é uma foto do board, não a métrica do funil.
+ */
+export function groupByStage(cards: PlanoCard[], period: Period): KanbanColumn[] {
+  const byStage = new Map<string, PlanoCard[]>();
+  for (const c of cards) {
+    if (!inPeriod(c.eventDate, period)) continue;
+    const list = byStage.get(c.stage);
+    if (list) list.push(c);
+    else byStage.set(c.stage, [c]);
+  }
+
+  const columns: KanbanColumn[] = [];
+  for (const [stage, list] of byStage) {
+    list.sort(
+      (a, b) =>
+        (b.value || 0) - (a.value || 0) || (b.eventDate || '').localeCompare(a.eventDate || ''),
+    );
+    columns.push({
+      stage,
+      bucket: list[0]?.bucket ?? null,
+      count: list.length,
+      value: list.reduce((sum, c) => sum + (c.value || 0), 0),
+      cards: list,
+    });
+  }
+
+  columns.sort((a, b) => stageRank(a.stage) - stageRank(b.stage) || a.stage.localeCompare(b.stage));
+  return columns;
 }
 
 export function aggregate(cards: PlanoCard[], period: Period): Relatorio {

@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { FunnelPipeline, type FunnelStage } from '@/components/funnel-pipeline';
 import { KpiCard } from '@/components/kpi-card';
+import { PlanoSaudeTabs } from '@/components/plano-saude-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { parsePeriodFromSearchParams, periodLabel, priorPeriod } from '@/lib/period';
 import { aggregate, effectiveCRMPeriod, loadSnapshot, type PlanoSnapshot } from '@/lib/plano-saude';
@@ -26,17 +27,20 @@ async function PageHeader({ searchParams }: { searchParams: SP }) {
   const prior = priorPeriod(current);
   const isDefault = !sp.since && !sp.until;
   return (
-    <header className="flex flex-col gap-1.5">
-      <h1 className="font-display font-semibold text-3xl text-foreground tracking-tight sm:text-4xl">
-        Plano de Saúde
-      </h1>
-      <p className="text-muted-foreground text-sm">
-        Relatório do período
-        <span className="mx-2 text-muted-foreground/50">·</span>
-        {isDefault ? 'Últimos 30 dias' : periodLabel(current)}
-        <span className="mx-2 text-muted-foreground/50">·</span>
-        comparado com {periodLabel(prior)}
-      </p>
+    <header className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1.5">
+        <h1 className="font-display font-semibold text-3xl text-foreground tracking-tight sm:text-4xl">
+          Plano de Saúde
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Relatório do período
+          <span className="mx-2 text-muted-foreground/50">·</span>
+          {isDefault ? 'Últimos 30 dias' : periodLabel(current)}
+          <span className="mx-2 text-muted-foreground/50">·</span>
+          comparado com {periodLabel(prior)}
+        </p>
+      </div>
+      <PlanoSaudeTabs />
     </header>
   );
 }
@@ -140,9 +144,12 @@ function SnapshotFooter({ snapshot }: { snapshot: PlanoSnapshot }) {
 
 function HeaderSkeleton() {
   return (
-    <header className="flex flex-col gap-2">
-      <Skeleton className="h-9 w-56 sm:h-10" />
-      <Skeleton className="h-4 w-80" />
+    <header className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <Skeleton className="h-9 w-56 sm:h-10" />
+        <Skeleton className="h-4 w-80" />
+      </div>
+      <Skeleton className="h-9 w-56 rounded-md" />
     </header>
   );
 }
