@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { FintureMark } from '@/components/ceo/finture-mark';
 import { HeroFunnel, STAGE_COLOR } from '@/components/ceo/hero-funnel';
 import { PeriodPills } from '@/components/ceo/period-pills';
 import { RecentTable } from '@/components/ceo/recent-table';
@@ -34,12 +35,7 @@ async function TopBar({ searchParams }: { searchParams: SP }) {
     <header className="flex flex-col gap-5 pb-2">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-baseline gap-3">
-          <span
-            aria-hidden="true"
-            className="inline-flex size-7 translate-y-0.5 items-center justify-center self-center rounded bg-primary font-bold font-display text-primary-foreground"
-          >
-            f
-          </span>
+          <FintureMark className="size-8 shrink-0 self-center" />
           <h1 className="font-display font-semibold text-2xl text-foreground tracking-tight sm:text-3xl">
             Plano de Saúde
           </h1>
