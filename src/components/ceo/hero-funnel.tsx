@@ -1,5 +1,6 @@
 import { fmtCompactCurrency, fmtInteger } from '@/lib/format';
-import type { CeoStageKey, CeoSummary } from '@/lib/plano-saude';
+import { type CeoStageKey, type CeoSummary, ceoFunnel } from '@/lib/plano-saude';
+import { StageFunnel } from './stage-funnel';
 
 /**
  * Cor de cada etapa: o topo do funil é neutro (cinza quente), o trabalho do time
@@ -19,6 +20,9 @@ const pct = (v: number) =>
   `${(v * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1, minimumFractionDigits: v > 0 && v < 0.1 ? 1 : 0 })}%`;
 
 export function HeroFunnel({ s }: { s: CeoSummary }) {
+  const count = (k: CeoStageKey) => s.stages.find((x) => x.key === k)?.count ?? 0;
+  const frios = count('frios');
+  const novos = count('novos');
   return (
     <section
       aria-label="Resumo do funil"
@@ -58,34 +62,15 @@ export function HeroFunnel({ s }: { s: CeoSummary }) {
         </div>
       </div>
 
-      <ol className="mt-10 flex flex-col gap-3" aria-label="Onde os leads estão agora">
-        {s.stages.map((st) => (
-          <li
-            key={st.key}
-            className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1.5 sm:grid-cols-[13rem_minmax(0,1fr)_3.5rem]"
-          >
-            <div className="min-w-0">
-              <p className="font-medium text-foreground text-sm sm:text-base">{st.label}</p>
-              <p className="tabular text-muted-foreground text-xs sm:text-sm">
-                {st.value > 0 ? `${fmtCompactCurrency(st.value)} · ` : ''}
-                {pct(st.share)} dos leads
-              </p>
-            </div>
-            <div className="order-last col-span-2 h-3 overflow-hidden rounded-full bg-secondary sm:order-none sm:col-span-1 sm:h-9 sm:rounded-lg">
-              <div
-                className="h-full rounded-[inherit]"
-                style={{
-                  width: `${Math.max(st.share * 100, st.count > 0 ? 1.5 : 0)}%`,
-                  backgroundColor: STAGE_COLOR[st.key],
-                }}
-              />
-            </div>
-            <p className="tabular text-right font-display font-semibold text-foreground text-xl sm:text-2xl">
-              {fmtInteger(st.count)}
-            </p>
-          </li>
-        ))}
-      </ol>
+      <div className="mt-10">
+        <StageFunnel steps={ceoFunnel(s)} />
+        <p className="tabular mt-4 text-center text-muted-foreground text-sm">
+          Cada etapa conta quem chegou nela ou passou dela; o percentual é sobre a etapa anterior.
+          Fora do funil agora: {fmtInteger(frios)} {frios === 1 ? 'lead frio' : 'leads frios'} (sem
+          resposta) e {fmtInteger(novos)} {novos === 1 ? 'novo lead' : 'novos leads'} ainda sem
+          atendimento.
+        </p>
+      </div>
     </section>
   );
 }

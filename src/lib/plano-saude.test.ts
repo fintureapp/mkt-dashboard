@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { resolveCeoPeriod } from './ceo-period.ts';
 import {
+  ceoFunnel,
   ceoStageOf,
   ceoSummary,
   earliestEntry,
@@ -159,5 +160,42 @@ describe('resolveCeoPeriod', () => {
   });
   it('datas inválidas caem no padrão', () => {
     assert.equal(resolveCeoPeriod({ since: 'ontem', until: '2026-10-01' }, today).preset, '30d');
+  });
+});
+
+describe('ceoFunnel', () => {
+  const cards = [
+    card('Novos Leads'),
+    card('Leads Frios - Segunda Validação'),
+    card('Necessita Atendimento'),
+    card('Atendimento Humano / Em Cotação'),
+    card('Atendimento Humano / Em Cotação'),
+    card('Negociação'),
+    card('Negociações quentes'),
+    card('Boleto pago'),
+    card('Fechado - Perdido'),
+  ];
+  const f = ceoFunnel(ceoSummary(cards, null));
+  const get = (k: string) => f.find((x) => x.key === k);
+
+  it('conta quem chegou na etapa ou passou dela', () => {
+    assert.deepEqual(
+      f.map((x) => x.count),
+      [9, 7, 6, 3, 1],
+    );
+  });
+
+  it('é monotônico (nenhuma etapa maior que a anterior)', () => {
+    for (let i = 1; i < f.length; i++) assert.ok(f[i].count <= f[i - 1].count);
+  });
+
+  it('taxa entre etapas', () => {
+    assert.equal(get('total')?.fromPrev, null);
+    assert.equal(get('negociacao')?.fromPrev, 3 / 6);
+    assert.equal(get('vendas')?.fromPrev, 1 / 3);
+  });
+
+  it('sem leads, taxas são null', () => {
+    assert.ok(ceoFunnel(ceoSummary([], null)).every((x) => x.fromPrev === null));
   });
 });

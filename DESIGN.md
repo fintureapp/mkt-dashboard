@@ -311,13 +311,13 @@ Sombras existem em **um único caso**: floating UI que precisa descolar visualme
 
 ### Painel do CEO (signature, desde 03/11/2026)
 
-- **Hero funnel** (`components/ceo/hero-funnel.tsx`): um container `Soft Ink`, `rounded-2xl`. Topo com 3 destaques de pesos diferentes: leads (cream, 60px) à esquerda, volume em negociação (sienna, até 72px) no centro, conversão em vendas (olive) à direita. Abaixo, uma linha por etapa: rótulo + "R$ · % dos leads", barra de 36px com trilho `Lifted Charcoal`, contagem à direita. Largura da barra = participação no total (honesta, não relativa ao maior).
+- **Hero funnel** (`components/ceo/hero-funnel.tsx`): um container `Soft Ink`, `rounded-2xl`. Topo com 3 destaques de pesos diferentes: leads (cream, 60px) à esquerda, volume em negociação (sienna, até 72px) no centro, conversão em vendas (olive) à direita. Abaixo, o funil de conversão (ver item próprio) e uma linha com quem está fora do funil (frios, novos parados).
 - **Cores das etapas:** topo neutro (Warm Ash `#b0a89c`, frios `#6f675d`), trabalho do time esquenta (teal → peach → sienna), venda em olive, perdido em rose. Mesmas cores nos pontos da tabela.
 - **Stat strip** (`stat-strip.tsx`): uma faixa única com células separadas por fios 1px `Hairline Sepia`, não cinco cards soltos.
 - **Period pills** (`period-pills.tsx`): grupo pílula `Soft Ink`; ativo em cream sobre ink. Datas livres em `input[type=date]` com `color-scheme: dark`.
 - **Dado pessoal:** a página é pública; tabela mostra só primeiro nome.
 - **Top criativos** (`top-creatives.tsx`): 3 colunas separadas por fio 1px dentro de um container; imagem 4:5 com a posição (1º, 2º, 3º) sobre ela; Leads · CPL · Investido em métrica, CTR em texto secundário.
-- **Diagnóstico** (`diagnosis.tsx`): botão primário (sienna) no topo, a única ação primária da página. O resultado abre inline abaixo do período (sem modal), em container com borda sienna/40. Cada achado: prioridade com ícone + cor (alta rose, média peach, baixa ash), área, título, evidência em texto secundário e "O que fazer" com rótulo sienna. Aviso de IA no rodapé.
+- **Funil de conversão** (`stage-funnel.tsx` + `ui/funnel-chart.tsx`): substitui as barras no hero. Segmentos em camadas (3 opacidades da mesma cor da etapa), número acima em Space Grotesk, rótulo abaixo, pílula cream com a conversão sobre a etapa anterior. Cores: Leads ash, Atendidos teal, Cotação peach, Negociação sienna, Vendas olive. Horizontal ≥ md, vertical no celular. Entrada com crescimento escalonado (mola sem overshoot); nada anima com reduced-motion.
 
 ## 6. Do's and Don'ts
 

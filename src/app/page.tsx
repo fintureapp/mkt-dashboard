@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-import { DiagnosisButton, DiagnosisPanel, DiagnosisProvider } from '@/components/ceo/diagnosis';
 import { HeroFunnel, STAGE_COLOR } from '@/components/ceo/hero-funnel';
 import { PeriodPills } from '@/components/ceo/period-pills';
 import { RecentTable } from '@/components/ceo/recent-table';
@@ -32,34 +31,30 @@ async function TopBar({ searchParams }: { searchParams: SP }) {
   const sp = await searchParams;
   const { preset, period } = resolveCeoPeriod(sp);
   return (
-    <DiagnosisProvider enabled={Boolean(process.env.ANTHROPIC_API_KEY)}>
-      <header className="flex flex-col gap-5 pb-2">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-baseline gap-3">
-            <span
-              aria-hidden="true"
-              className="inline-flex size-7 translate-y-0.5 items-center justify-center self-center rounded bg-primary font-bold font-display text-primary-foreground"
-            >
-              f
-            </span>
-            <h1 className="font-display font-semibold text-2xl text-foreground tracking-tight sm:text-3xl">
-              Plano de Saúde
-            </h1>
-            <span className="hidden text-muted-foreground text-sm sm:inline">Criteria PME</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <DiagnosisButton />
-            <RefreshButton />
-          </div>
+    <header className="flex flex-col gap-5 pb-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-baseline gap-3">
+          <span
+            aria-hidden="true"
+            className="inline-flex size-7 translate-y-0.5 items-center justify-center self-center rounded bg-primary font-bold font-display text-primary-foreground"
+          >
+            f
+          </span>
+          <h1 className="font-display font-semibold text-2xl text-foreground tracking-tight sm:text-3xl">
+            Plano de Saúde
+          </h1>
+          <span className="hidden text-muted-foreground text-sm sm:inline">Criteria PME</span>
         </div>
-        <PeriodPills
-          preset={preset}
-          since={preset === null ? (period?.since ?? null) : null}
-          until={preset === null ? (period?.until ?? null) : null}
-        />
-      </header>
-      <DiagnosisPanel />
-    </DiagnosisProvider>
+        <div className="flex items-center gap-2">
+          <RefreshButton />
+        </div>
+      </div>
+      <PeriodPills
+        preset={preset}
+        since={preset === null ? (period?.since ?? null) : null}
+        until={preset === null ? (period?.until ?? null) : null}
+      />
+    </header>
   );
 }
 
