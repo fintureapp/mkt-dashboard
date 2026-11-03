@@ -1,4 +1,5 @@
 import { ArrowDownRight, ArrowUpRight, Minus } from 'lucide-react';
+import { Sparkline } from '@/components/sparkline';
 import {
   fmtCurrency,
   fmtDecimal,
@@ -9,7 +10,6 @@ import {
 } from '@/lib/format';
 import { deltaPct } from '@/lib/kpi-calc';
 import { cn } from '@/lib/utils';
-import { Sparkline } from '@/components/sparkline';
 
 type Format = 'currency' | 'integer' | 'decimal' | 'percent' | 'multiplier';
 type Variant = 'standard' | 'hero';
@@ -31,6 +31,7 @@ export function KpiCard({
   hint,
   variant = 'standard',
   sparkline,
+  comparison = true,
 }: {
   label: string;
   value: number | null | undefined;
@@ -39,12 +40,23 @@ export function KpiCard({
   hint?: string;
   variant?: Variant;
   sparkline?: SparklineProp;
+  /**
+   * Desligue quando a métrica for uma FOTO (posição atual de uma coluna do CRM):
+   * sem passado com que comparar, a linha vira um "— vs período anterior" que só
+   * ocupa espaço e sugere que existe uma comparação.
+   */
+  comparison?: boolean;
 }) {
   const fmtValue = formatters[format];
   const delta = deltaPct(value ?? null, prior ?? null);
   const direction = delta == null ? 'flat' : delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat';
   const isHero = variant === 'hero';
   const showSparkline = isHero && sparkline && sparkline.data.length >= 2;
+
+  // Valores muito longos (ex.: "R$ 14.320.000,00" num card de 1/4 de largura)
+  // estouram o cartão no tamanho padrão. Acima de 13 caracteres, desce um degrau.
+  const texto = fmtValue(value ?? null);
+  const isLongo = texto.length > 13;
 
   return (
     <article
@@ -57,15 +69,23 @@ export function KpiCard({
       <span
         className={cn(
           'font-display font-semibold tabular tracking-tight text-foreground',
-          isHero ? 'text-[2.75rem] leading-[1.05] sm:text-5xl' : 'text-3xl leading-[1.05]',
+          isHero
+            ? isLongo
+              ? 'text-4xl leading-[1.05] sm:text-[2.75rem]'
+              : 'text-[2.75rem] leading-[1.05] sm:text-5xl'
+            : isLongo
+              ? 'text-2xl leading-[1.05]'
+              : 'text-3xl leading-[1.05]',
         )}
       >
-        {fmtValue(value ?? null)}
+        {texto}
       </span>
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
-        <DeltaPill direction={direction} delta={delta} />
-        <span className="text-muted-foreground">vs período anterior</span>
-      </div>
+      {comparison && (
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
+          <DeltaPill direction={direction} delta={delta} />
+          <span className="text-muted-foreground">vs período anterior</span>
+        </div>
+      )}
       {showSparkline && (
         <div className="mt-1">
           <Sparkline data={sparkline.data} ariaLabel={sparkline.ariaLabel} />

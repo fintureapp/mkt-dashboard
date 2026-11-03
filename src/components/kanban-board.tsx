@@ -1,13 +1,31 @@
 import { fmtCurrency, fmtInteger } from '@/lib/format';
-import type { KanbanColumn, PlanoBucket, PlanoCard } from '@/lib/plano-saude';
+import { entryDate, type KanbanColumn, type PlanoBucket, type PlanoCard } from '@/lib/plano-saude';
 import { cn } from '@/lib/utils';
 
 /** Cor do estágio herdada do bucket — mesma paleta earthy do funil de valor. */
 const BUCKET_COLOR: Record<PlanoBucket, string> = {
   cotacoes: 'var(--color-chart-2)',
-  quentes: 'var(--color-chart-3)',
+  negociacao: 'var(--color-chart-3)',
+  quentes: 'var(--color-chart-1)',
   fechamento: 'var(--color-chart-4)',
 };
+
+/**
+ * Cor da coluna. O bucket já vem do NOME do estágio (`bucketOfStage`), então uma
+ * coluna criada agora no CRM, ainda sem nenhum card, nasce com a cor da etapa a
+ * que pertence. Restam sem bucket os estágios que não viram métrica de valor:
+ * topo do funil, "Fechado - Ganho" e "Fechado - Perdido".
+ *
+ * O topo do funil fica neutro de propósito: são as colunas mais cheias do quadro,
+ * e pintá-las roubaria a atenção das poucas onde há dinheiro em jogo.
+ */
+function columnColor(column: KanbanColumn): string {
+  if (column.bucket) return BUCKET_COLOR[column.bucket];
+  const s = column.stage.toLowerCase();
+  if (s.includes('perdido')) return 'var(--color-chart-5)';
+  if (s.includes('ganho')) return BUCKET_COLOR.fechamento;
+  return 'var(--color-muted-foreground)'; // topo do funil (leads, validação, atendimento)
+}
 
 const dateFmt = new Intl.DateTimeFormat('pt-BR', {
   day: '2-digit',
@@ -39,7 +57,10 @@ function fmtContact(name: string): string {
   if (rest.length === 10 || rest.length === 11) {
     const ddd = rest.slice(0, 2);
     const num = rest.slice(2);
-    const mid = num.length === 9 ? `${num.slice(0, 5)}-${num.slice(5)}` : `${num.slice(0, 4)}-${num.slice(4)}`;
+    const mid =
+      num.length === 9
+        ? `${num.slice(0, 5)}-${num.slice(5)}`
+        : `${num.slice(0, 4)}-${num.slice(4)}`;
     return `${cc}(${ddd}) ${mid}`;
   }
   return raw;
@@ -47,7 +68,9 @@ function fmtContact(name: string): string {
 
 function KanbanCard({ card }: { card: PlanoCard }) {
   const hasValue = card.value > 0;
-  const when = fmtEventDate(card.eventDate);
+  // Data de ENTRADA do lead — a mesma que recorta o quadro, para o card não
+  // exibir uma data fora da janela selecionada.
+  const when = fmtEventDate(entryDate(card));
   const taskCount = card.tasks?.length ?? 0;
   return (
     <article className="flex flex-col gap-1.5 rounded-md border border-border bg-card p-3">
@@ -75,7 +98,7 @@ function KanbanCard({ card }: { card: PlanoCard }) {
 }
 
 function KanbanColumnView({ column }: { column: KanbanColumn }) {
-  const color = column.bucket ? BUCKET_COLOR[column.bucket] : 'var(--color-muted-foreground)';
+  const color = columnColor(column);
   return (
     <section className="flex w-72 shrink-0 flex-col gap-3">
       <header className="flex flex-col gap-1.5 border-border border-b pb-2.5">
@@ -98,12 +121,12 @@ function KanbanColumnView({ column }: { column: KanbanColumn }) {
         </div>
       </header>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex max-h-[70vh] flex-col gap-2 overflow-y-auto pr-1">
         {column.cards.length > 0 ? (
           column.cards.map((card) => <KanbanCard key={card.convId} card={card} />)
         ) : (
           <p className="rounded-md border border-border border-dashed px-3 py-6 text-center text-muted-foreground text-xs">
-            Nenhum card no período
+            Sem entradas no período
           </p>
         )}
       </div>
@@ -111,20 +134,48 @@ function KanbanColumnView({ column }: { column: KanbanColumn }) {
   );
 }
 
-export function KanbanBoard({ columns }: { columns: KanbanColumn[] }) {
+export function KanbanBoard({
+  columns,
+  period,
+  undated = 0,
+  total,
+}: {
+  columns: KanbanColumn[];
+  /** Janela selecionada, quando o quadro está recortado por período. */
+  period?: string;
+  /** Cards sem data resolvida no CRM — ficam fora de qualquer recorte. */
+  undated?: number;
+  /** Total de cards no board inteiro, para dar escala ao recorte. */
+  total?: number;
+}) {
   if (columns.length === 0) {
     return (
       <div className="rounded-lg border border-border border-dashed bg-card p-10 text-center">
-        <p className="font-medium text-foreground">Nenhum card no período selecionado</p>
+        <p className="font-medium text-foreground">Nenhum card no quadro</p>
         <p className="mt-1 text-muted-foreground text-sm">
-          Ajuste o período no seletor acima para ver os cards do funil.
+          O coletor ainda não trouxe cards deste funil. Verifique a última coleta abaixo.
         </p>
       </div>
     );
   }
 
+  const totalCards = columns.reduce((sum, c) => sum + c.count, 0);
+
   return (
     <div className="flex flex-col gap-4">
+      <p className="text-muted-foreground text-xs">
+        <span className="text-foreground/80 tabular">{fmtInteger(totalCards)}</span> cards em{' '}
+        <span className="text-foreground/80 tabular">{fmtInteger(columns.length)}</span> colunas
+        {period ? (
+          <>
+            {' '}
+            · entradas de <span className="text-foreground/80">{period}</span>
+            {typeof total === 'number' ? <> de {fmtInteger(total)} no board</> : null}
+          </>
+        ) : (
+          <> · quadro completo, sem recorte de período</>
+        )}
+      </p>
       <div className="overflow-x-auto pb-3">
         <div className="flex min-w-min gap-4">
           {columns.map((column) => (
@@ -133,8 +184,18 @@ export function KanbanBoard({ columns }: { columns: KanbanColumn[] }) {
         </div>
       </div>
       <p className="text-muted-foreground/60 text-xs">
-        O quadro mostra os estágios com cards coletados pelo CRM. As contagens completas do funil,
-        incluindo estágios sem detalhe de card, ficam na Visão Geral.
+        {period ? (
+          <>
+            O recorte é pela data de entrada do lead no CRM: são os leads que chegaram na janela e a
+            coluna em que estão hoje. As colunas são sempre as do funil completo — um estágio sem
+            nenhum desses leads aparece vazio.
+            {undated > 0 ? (
+              <> {fmtInteger(undated)} cards sem data no CRM ficam fora de qualquer recorte.</>
+            ) : null}
+          </>
+        ) : (
+          <>Espelho de 100% do funil no CRM — todas as colunas e todos os cards da última coleta.</>
+        )}
       </p>
     </div>
   );

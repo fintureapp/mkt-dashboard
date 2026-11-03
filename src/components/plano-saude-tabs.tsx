@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const TABS = [
+  { href: '/plano-saude/executivo', label: 'Executivo' },
   { href: '/plano-saude', label: 'Visão Geral' },
   { href: '/plano-saude/kanban', label: 'Kanban' },
 ] as const;
@@ -33,7 +34,9 @@ export function PlanoSaudeTabs() {
             className={cn(
               'rounded-[0.3rem] px-3 py-1 font-medium text-sm transition-colors duration-150',
               'outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-              active ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground',
+              active
+                ? 'bg-secondary text-foreground'
+                : 'text-muted-foreground hover:text-foreground',
             )}
           >
             {tab.label}

@@ -30,9 +30,6 @@ onde havia ambiguidade.
   `.env.local` (Chatwoot, plano-saúde), todas com placeholder `replace_me`.
 - **CLAUDE.md:** preserva o import `@AGENTS.md` original e adiciona as instruções
   específicas para Claude Code.
-- **DESIGN.md:** versionado como **resumo condensado** do design system (o original
-  no disco traz um bloco extenso de tokens em frontmatter YAML). Os tokens efetivos
-  vivem em `src/app/globals.css`; o resumo preserva as regras normativas.
 - **CODEOWNERS:** a org `fintureapp` não tem times definidos (consulta retornou
   vazio). Usado placeholder comentado; nenhum usuário/time inventado.
 - **Branch protection / secret scanning / push protection / Dependabot:** não

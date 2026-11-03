@@ -23,10 +23,21 @@ function dir(delta: number | null): 'up' | 'down' | 'flat' {
  * Funil de valor do Plano de Saúde: cada etapa é uma barra cuja largura é proporcional
  * ao R$ que ela carrega. A estrela é o pipeline em dinheiro, não a contagem.
  *
- * Honestidade do dado: as três etapas são fotos do funil AGORA (snapshot), não uma coorte
- * que flui de uma para a outra — as razões entre etapas são indicativas.
+ * Honestidade do dado: as etapas são fotos do funil AGORA (snapshot), não uma coorte
+ * que flui de uma para a outra.
+ *
+ * `showRatio` liga a linha "X% do valor da etapa anterior". Desligue quando as
+ * barras forem o total PARADO em cada coluna do Kanban: o time só preenche o
+ * "Valor da cotação" quando a proposta amadurece, então uma etapa mais adiante
+ * carrega mais dinheiro que a anterior e a razão vira ruído (12.959%), não leitura.
  */
-export function FunnelPipeline({ stages }: { stages: FunnelStage[] }) {
+export function FunnelPipeline({
+  stages,
+  showRatio = true,
+}: {
+  stages: FunnelStage[];
+  showRatio?: boolean;
+}) {
   const maxValue = Math.max(...stages.map((s) => s.value), 1);
 
   return (
@@ -40,7 +51,7 @@ export function FunnelPipeline({ stages }: { stages: FunnelStage[] }) {
 
         return (
           <div key={stage.label} className="flex flex-col gap-3">
-            {i > 0 && (
+            {i > 0 && showRatio && (
               <div className="flex items-center gap-1.5 pl-0.5 text-muted-foreground/70 text-xs tabular">
                 <ArrowDown className="size-3" strokeWidth={2} aria-hidden="true" />
                 {ratioOfPrev != null
@@ -81,8 +92,9 @@ export function FunnelPipeline({ stages }: { stages: FunnelStage[] }) {
       })}
 
       <p className="text-muted-foreground/60 text-xs">
-        Valores por etapa do funil no snapshot atual — não é uma coorte que flui; as razões entre
-        etapas são indicativas.
+        {showRatio
+          ? 'Valores por etapa do funil no snapshot atual — não é uma coorte que flui; as razões entre etapas são indicativas.'
+          : 'Cada barra é o R$ parado hoje na coluna correspondente do Kanban — some as barras e você tem o pipeline, não uma coorte que flui de uma etapa para a outra.'}
       </p>
     </div>
   );

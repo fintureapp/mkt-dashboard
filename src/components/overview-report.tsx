@@ -108,7 +108,9 @@ async function KpiSections({ searchParams }: { searchParams: SP }) {
   // "Volume": o retorno real do negócio são os fechamentos no funil do CRM
   // (Plano de Saúde), não o purchase do pixel. Comparado ao Investimento, vira o Retorno.
   const volume = snapshot ? aggregatePlano(snapshot.cards, current).fechamento.value || null : null;
-  const volumePrior = snapshot ? aggregatePlano(snapshot.cards, prior).fechamento.value || null : null;
+  const volumePrior = snapshot
+    ? aggregatePlano(snapshot.cards, prior).fechamento.value || null
+    : null;
   const volRoas = volume != null && c.spend > 0 ? volume / c.spend : null;
   const volRoasPrior = volumePrior != null && p.spend > 0 ? volumePrior / p.spend : null;
   // ROI a partir do Volume (fechamentos do CRM) vs. Investimento.
@@ -130,7 +132,15 @@ async function KpiSections({ searchParams }: { searchParams: SP }) {
           label: 'Volume',
           value: volume,
           prior: volumePrior,
-          hint: volume == null ? 'Sem snapshot do funil' : 'fechamentos · funil Plano de Saúde',
+          // Sem snapshot e sem fechamento no período são coisas diferentes: dizer
+          // "sem snapshot" quando o funil só não teve fechamento manda caçar um
+          // problema de integração que não existe.
+          hint:
+            snapshot == null
+              ? 'Sem snapshot do funil'
+              : volume == null
+                ? 'nenhum fechamento no período · funil Plano de Saúde'
+                : 'fechamentos · funil Plano de Saúde',
         }}
         roas={volRoas}
         roasPrior={volRoasPrior}
@@ -157,7 +167,12 @@ async function KpiSections({ searchParams }: { searchParams: SP }) {
         >
           <KpiCard label="CPC" value={c.cpc} prior={p.cpc} format="currency" />
           <KpiCard label="CPM" value={c.cpm} prior={p.cpm} format="currency" />
-          <KpiCard label="Impressões" value={c.impressions} prior={p.impressions} format="integer" />
+          <KpiCard
+            label="Impressões"
+            value={c.impressions}
+            prior={p.impressions}
+            format="integer"
+          />
           <KpiCard label="Alcance" value={c.reach} prior={p.reach} format="integer" />
           <KpiCard label="Frequência" value={c.frequency} prior={p.frequency} format="decimal" />
           <KpiCard label="Cliques" value={c.clicks} prior={p.clicks} format="integer" />
@@ -238,7 +253,12 @@ async function TopCampaigns({ searchParams }: { searchParams: SP }) {
   const rows = currentRows
     .map((row) => {
       const k = rowToKpis(row);
-      return { id: row.campaign_id ?? '', name: row.campaign_name ?? '—', spend: k.spend, roas: k.roas };
+      return {
+        id: row.campaign_id ?? '',
+        name: row.campaign_name ?? '—',
+        spend: k.spend,
+        roas: k.roas,
+      };
     })
     .sort((a, b) => b.spend - a.spend)
     .slice(0, 3);

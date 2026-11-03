@@ -3,7 +3,13 @@ import { KanbanBoard } from '@/components/kanban-board';
 import { PlanoSaudeTabs } from '@/components/plano-saude-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { parsePeriodFromSearchParams, periodLabel } from '@/lib/period';
-import { effectiveCRMPeriod, groupByStage, loadSnapshot, type PlanoSnapshot } from '@/lib/plano-saude';
+import {
+  countUndated,
+  effectiveCRMPeriod,
+  groupByStage,
+  loadSnapshot,
+  type PlanoSnapshot,
+} from '@/lib/plano-saude';
 
 type SP = Promise<{ since?: string; until?: string }>;
 
@@ -31,7 +37,7 @@ async function PageHeader({ searchParams }: { searchParams: SP }) {
           Plano de Saúde
         </h1>
         <p className="text-muted-foreground text-sm">
-          Quadro por estágio do CRM
+          Quadro por estágio
           <span className="mx-2 text-muted-foreground/50">·</span>
           {isDefault ? 'Últimos 30 dias' : periodLabel(current)}
         </p>
@@ -57,11 +63,16 @@ async function Board({ searchParams }: { searchParams: SP }) {
     );
   }
 
-  const columns = groupByStage(snapshot.cards, current);
+  const columns = groupByStage(snapshot.cards, current, Object.keys(snapshot.stageCounts ?? {}));
 
   return (
     <div className="flex flex-col gap-6">
-      <KanbanBoard columns={columns} />
+      <KanbanBoard
+        columns={columns}
+        period={periodLabel(current)}
+        undated={countUndated(snapshot.cards)}
+        total={snapshot.cards.length}
+      />
       <SnapshotFooter snapshot={snapshot} />
     </div>
   );
@@ -75,8 +86,8 @@ function SnapshotFooter({ snapshot }: { snapshot: PlanoSnapshot }) {
   });
   return (
     <p className="text-muted-foreground/80 text-xs">
-      Funil <span className="text-foreground/80">{snapshot.funnel}</span> · dados do CRM atualizados em{' '}
-      <span className="tabular">{when}</span>
+      Funil <span className="text-foreground/80">{snapshot.funnel}</span> · dados do CRM atualizados
+      em <span className="tabular">{when}</span>
       {snapshot.note ? <> · {snapshot.note}</> : null}
     </p>
   );

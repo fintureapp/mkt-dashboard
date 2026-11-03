@@ -66,6 +66,8 @@ crm_exports/
 *.jsonl
 # Snapshot de CRM com PII real (ver SECURITY_NOTES.md)
 plano-saude-snapshot.json
+# Snapshot de amostra do Consórcio (dev) — em produção vem do Blob via Power Automate
+consorcio-snapshot.json
 
 # Permitir apenas dados sintéticos / exemplos pequenos
 !data/sample/
@@ -77,3 +79,9 @@ plano-saude-snapshot.json
 # --- OS / editor ---
 .DS_Store
 Thumbs.db
+
+.vercel
+.env*
+
+# Artefatos do Playwright MCP (screenshots podem conter dados reais)
+.playwright-mcp/

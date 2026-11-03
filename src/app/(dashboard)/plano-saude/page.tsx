@@ -3,8 +3,13 @@ import { FunnelPipeline, type FunnelStage } from '@/components/funnel-pipeline';
 import { KpiCard } from '@/components/kpi-card';
 import { PlanoSaudeTabs } from '@/components/plano-saude-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { parsePeriodFromSearchParams, periodLabel, priorPeriod } from '@/lib/period';
-import { aggregate, effectiveCRMPeriod, loadSnapshot, type PlanoSnapshot } from '@/lib/plano-saude';
+import { parsePeriodFromSearchParams, periodLabel } from '@/lib/period';
+import {
+  boardTotals,
+  effectiveCRMPeriod,
+  loadSnapshot,
+  type PlanoSnapshot,
+} from '@/lib/plano-saude';
 
 type SP = Promise<{ since?: string; until?: string }>;
 
@@ -22,10 +27,7 @@ export default function PlanoSaudePage({ searchParams }: { searchParams: SP }) {
 }
 
 async function PageHeader({ searchParams }: { searchParams: SP }) {
-  const sp = await searchParams;
-  const current = effectiveCRMPeriod(parsePeriodFromSearchParams(sp));
-  const prior = priorPeriod(current);
-  const isDefault = !sp.since && !sp.until;
+  await searchParams;
   return (
     <header className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
@@ -33,11 +35,9 @@ async function PageHeader({ searchParams }: { searchParams: SP }) {
           Plano de Saúde
         </h1>
         <p className="text-muted-foreground text-sm">
-          Relatório do período
+          Posição do funil
           <span className="mx-2 text-muted-foreground/50">·</span>
-          {isDefault ? 'Últimos 30 dias' : periodLabel(current)}
-          <span className="mx-2 text-muted-foreground/50">·</span>
-          comparado com {periodLabel(prior)}
+          foto do Kanban do CRM agora
         </p>
       </div>
       <PlanoSaudeTabs />
@@ -47,8 +47,9 @@ async function PageHeader({ searchParams }: { searchParams: SP }) {
 
 async function Report({ searchParams }: { searchParams: SP }) {
   const sp = await searchParams;
+  // O período segue lido para o rodapé (é o recorte que as outras abas usam),
+  // mas NÃO recorta os números desta tela — ver `boardTotals`.
   const current = effectiveCRMPeriod(parsePeriodFromSearchParams(sp));
-  const prior = priorPeriod(current);
   const snapshot = await loadSnapshot();
 
   if (!snapshot) {
@@ -62,29 +63,38 @@ async function Report({ searchParams }: { searchParams: SP }) {
     );
   }
 
-  const cur = aggregate(snapshot.cards, current);
-  const prev = aggregate(snapshot.cards, prior);
+  const cur = boardTotals(snapshot.cards);
 
+  // Uma etapa por coluna do Kanban, na ordem do funil. "Propostas quentes" é a
+  // coluna "Negociações quentes" e nada mais; "Em negociação" guarda o estoque
+  // da coluna larga, que antes somava com ela e inflava o número.
   const stages: FunnelStage[] = [
     {
       label: 'Cotações enviadas',
       value: cur.cotacoes.value,
       count: cur.cotacoes.count,
-      prior: prev.cotacoes.value || null,
+      prior: null,
       color: 'var(--color-chart-2)',
+    },
+    {
+      label: 'Em negociação',
+      value: cur.negociacao.value,
+      count: cur.negociacao.count,
+      prior: null,
+      color: 'var(--color-chart-3)',
     },
     {
       label: 'Propostas quentes',
       value: cur.quentes.value,
       count: cur.quentes.count,
-      prior: prev.quentes.value || null,
-      color: 'var(--color-chart-3)',
+      prior: null,
+      color: 'var(--color-chart-1)',
     },
     {
       label: 'Fechamentos',
       value: cur.fechamento.value,
       count: cur.fechamento.count,
-      prior: prev.fechamento.value || null,
+      prior: null,
       color: 'var(--color-chart-4)',
     },
   ];
@@ -97,17 +107,19 @@ async function Report({ searchParams }: { searchParams: SP }) {
           variant="hero"
           label="A ganhar"
           value={cur.quentes.value || null}
-          prior={prev.quentes.value || null}
+          prior={null}
+          comparison={false}
           format="currency"
-          hint="propostas quentes · estágio Negociação"
+          hint="coluna Negociações quentes do Kanban"
         />
         <KpiCard
           variant="hero"
           label="Fechado"
           value={cur.fechamento.value || null}
-          prior={prev.fechamento.value || null}
+          prior={null}
+          comparison={false}
           format="currency"
-          hint="estágio Fechado - Ganho"
+          hint="coluna Boleto pago · volume ×3"
         />
       </section>
 
@@ -117,17 +129,19 @@ async function Report({ searchParams }: { searchParams: SP }) {
           <h2 className="font-display font-semibold text-foreground text-lg tracking-tight">
             Funil de valor
           </h2>
-          <span className="text-muted-foreground text-xs">pipeline em R$ por etapa</span>
+          <span className="text-muted-foreground text-xs">
+            R$ parado hoje em cada coluna do Kanban
+          </span>
         </div>
-        <FunnelPipeline stages={stages} />
+        <FunnelPipeline stages={stages} showRatio={false} />
       </section>
 
-      <SnapshotFooter snapshot={snapshot} />
+      <SnapshotFooter snapshot={snapshot} period={periodLabel(current)} />
     </div>
   );
 }
 
-function SnapshotFooter({ snapshot }: { snapshot: PlanoSnapshot }) {
+function SnapshotFooter({ snapshot, period }: { snapshot: PlanoSnapshot; period: string }) {
   const when = new Date(snapshot.generatedAt).toLocaleString('pt-BR', {
     timeZone: 'America/Sao_Paulo',
     dateStyle: 'short',
@@ -135,9 +149,9 @@ function SnapshotFooter({ snapshot }: { snapshot: PlanoSnapshot }) {
   });
   return (
     <p className="text-muted-foreground/80 text-xs">
-      Funil <span className="text-foreground/80">{snapshot.funnel}</span> · dados do CRM atualizados em{' '}
-      <span className="tabular">{when}</span>
-      {snapshot.note ? <> · {snapshot.note}</> : null}
+      Funil <span className="text-foreground/80">{snapshot.funnel}</span> · dados do CRM atualizados
+      em <span className="tabular">{when}</span> · esta aba mostra a posição atual das colunas; o
+      período <span className="tabular">{period}</span> recorta as abas Executivo e Kanban
     </p>
   );
 }

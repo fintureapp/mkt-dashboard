@@ -25,8 +25,18 @@ const NAV: readonly NavItem[] = [
     href: '/plano-saude',
     label: 'Plano de Saúde',
     children: [
+      { href: '/plano-saude/executivo', label: 'Executivo' },
       { href: '/plano-saude', label: 'Visão Geral' },
       { href: '/plano-saude/kanban', label: 'Kanban' },
+    ],
+  },
+  {
+    href: '/consorcio',
+    label: 'Consórcio',
+    children: [
+      { href: '/consorcio/executivo', label: 'Executivo' },
+      { href: '/consorcio', label: 'Visão Geral' },
+      { href: '/consorcio/kanban', label: 'Kanban' },
     ],
   },
 ] as const;
@@ -126,7 +136,10 @@ function NavItemWithSubmenu({ item, pathname }: { item: NavItem; pathname: strin
           aria-hidden="true"
         />
         {active && (
-          <span aria-hidden="true" className="-bottom-[19px] absolute inset-x-3 h-[2px] bg-primary" />
+          <span
+            aria-hidden="true"
+            className="-bottom-[19px] absolute inset-x-3 h-[2px] bg-primary"
+          />
         )}
       </Link>
 

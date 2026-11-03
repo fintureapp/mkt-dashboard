@@ -16,6 +16,13 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 export function middleware(req: NextRequest) {
+  // Endpoint de ingestão do snapshot de Consórcio: dispensa o basic auth porque
+  // é chamado server-to-server (Power Automate). A própria rota valida um segredo
+  // Bearer (CONSORCIO_INGEST_SECRET), então liberar aqui não abre acesso.
+  if (req.nextUrl.pathname === '/api/consorcio/ingest') {
+    return NextResponse.next();
+  }
+
   // Link público (sem login) da Visão Geral: só o token exato dispensa o basic
   // auth. Token ausente/errado cai no fluxo normal de auth (fail-closed), então
   // /publico/* fica escondido atrás de login enquanto PUBLIC_SHARE_TOKEN não bater.

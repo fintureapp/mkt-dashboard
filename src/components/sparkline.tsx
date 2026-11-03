@@ -4,13 +4,7 @@ import { Line, LineChart, ResponsiveContainer } from 'recharts';
 
 const STROKE = '#f8b96b'; // Peach Ribbon — matches TrendChart conversions line
 
-export function Sparkline({
-  data,
-  ariaLabel,
-}: {
-  data: readonly number[];
-  ariaLabel: string;
-}) {
+export function Sparkline({ data, ariaLabel }: { data: readonly number[]; ariaLabel: string }) {
   if (data.length < 2) return null;
 
   const series = data.map((v, i) => ({ i, v }));
