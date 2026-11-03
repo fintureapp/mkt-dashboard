@@ -74,3 +74,18 @@ onde havia ambiguidade.
   2024..hoje são recusados antes de chamar a IA.
 - **MCP da Meta:** é um conector da conta Claude do usuário, não acessível pelo site.
   O site usa a Graph API própria, que traz os mesmos números (sem os benchmarks de mercado).
+
+## 2026-11-03 · Diagnóstico removido; funil de conversão no lugar das barras
+
+- **Diagnóstico com IA removido** a pedido do usuário (botão, Server Action,
+  `@anthropic-ai/sdk`, `ANTHROPIC_API_KEY`). Recuperável no PR #15.
+- **Funil:** as barras "onde o lead está agora" viraram um funil acumulado
+  (`ceoFunnel`) com a conversão etapa a etapa, usando o componente FunnelChart
+  enviado pelo usuário (`src/components/ui/funnel-chart.tsx`, dependência `motion`).
+- **Regra do acumulado:** cada etapa = leads na etapa ou além. Perdidos entram em
+  Atendidos e Cotação, mesma regra do `healthFunnel` anterior, porque o CRM não guarda
+  a etapa da perda. Consequência: a conversão Cotação → Negociação já desconta perdidos.
+- **Adaptações no componente:** pílula com % sobre a etapa anterior (sem pílula na 1ª),
+  tokens/tipografia Finture, molas sem overshoot, `prefers-reduced-motion`, guarda contra
+  divisão por zero, altura do desenho reduzida para não encostar nos números, SVG
+  `aria-hidden` com lista `sr-only` dos números.

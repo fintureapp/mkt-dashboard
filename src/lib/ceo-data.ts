@@ -60,7 +60,7 @@ export type CeoData = {
   creatives: CreativeRow[] | null;
 };
 
-/** Tudo o que a página e o diagnóstico leem para um recorte. null = sem snapshot do CRM. */
+/** Tudo o que a página lê para um recorte. null = sem snapshot do CRM. */
 export async function loadCeoData(
   period: Period | null,
   today: string,

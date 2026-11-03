@@ -682,3 +682,43 @@ export function earliestEntry(cards: PlanoCard[]): string | null {
   }
   return min;
 }
+
+export type FunnelStepKey = 'total' | 'atendidos' | 'cotacao' | 'negociacao' | 'vendas';
+
+export type FunnelStep = {
+  key: FunnelStepKey;
+  label: string;
+  /** Leads que chegaram a esta etapa OU passaram dela. */
+  count: number;
+  /** Fração (0–1) da etapa anterior que chegou aqui; null na primeira etapa ou sem base. */
+  fromPrev: number | null;
+};
+
+/**
+ * Funil acumulado a partir da foto "onde o lead está agora": cada etapa conta quem
+ * chegou nela ou foi além, para a taxa entre etapas fazer sentido (ex.: dos que
+ * entraram em cotação, quantos chegaram à negociação).
+ *
+ * Perdidos contam como tendo passado por atendimento e cotação, a mesma regra do
+ * funil executivo anterior (`healthFunnel`): o CRM não registra em que etapa o lead
+ * foi perdido, e a perda acontece na prática depois da cotação. Leads frios e novos
+ * ainda parados no topo só entram no total.
+ */
+export function ceoFunnel(s: CeoSummary): FunnelStep[] {
+  const c = (k: CeoStageKey) => s.stages.find((x) => x.key === k)?.count ?? 0;
+  const vendas = c('vendas');
+  const negociacao = c('negociacao') + vendas;
+  const cotacao = c('cotacao') + negociacao + s.perdidos.count;
+  const atendidos = c('atendimento') + cotacao;
+  const raw: Array<[FunnelStepKey, string, number]> = [
+    ['total', 'Leads', s.total],
+    ['atendidos', 'Atendidos', atendidos],
+    ['cotacao', 'Cotação', cotacao],
+    ['negociacao', 'Negociação', negociacao],
+    ['vendas', 'Vendas', vendas],
+  ];
+  return raw.map(([key, label, count], i) => {
+    const prev = i > 0 ? raw[i - 1][2] : 0;
+    return { key, label, count, fromPrev: i > 0 && prev > 0 ? count / prev : null };
+  });
+}
