@@ -1,0 +1,13 @@
+# Secrets — NUNCA subir no deploy
+.env
+.env.*
+!.env.example
+
+# Snapshot de CRM com PII real (produção lê via PLANO_SAUDE_SNAPSHOT_URL)
+plano-saude-snapshot.json
+
+# Local / artefatos (Vercel builda do zero)
+.next
+node_modules
+.git
+.vercel

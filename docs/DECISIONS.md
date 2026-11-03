@@ -30,11 +30,30 @@ onde havia ambiguidade.
   `.env.local` (Chatwoot, plano-saúde), todas com placeholder `replace_me`.
 - **CLAUDE.md:** preserva o import `@AGENTS.md` original e adiciona as instruções
   específicas para Claude Code.
-- **DESIGN.md:** versionado como **resumo condensado** do design system (o original
-  no disco traz um bloco extenso de tokens em frontmatter YAML). Os tokens efetivos
-  vivem em `src/app/globals.css`; o resumo preserva as regras normativas.
 - **CODEOWNERS:** a org `fintureapp` não tem times definidos (consulta retornou
   vazio). Usado placeholder comentado; nenhum usuário/time inventado.
 - **Branch protection / secret scanning / push protection / Dependabot:** não
   aplicáveis via MCP disponível → documentados como pendentes em
   `docs/GITHUB_SETTINGS.md` com comandos `gh` prontos.
+
+## 2026-11-03 · Painel único do CEO, sem login
+
+- **O que mudou:** o app virou uma página só (`/`), inspirada na estrutura do
+  painel "Live Ortega": 3 destaques + funil em barras horizontais + faixa de
+  indicadores + últimas movimentações. Identidade visual Finture mantida.
+- **Por quê:** o leitor principal passou a ser o CEO, que precisa da leitura mais
+  simples possível do Plano de Saúde. Pedido explícito: substituir o app inteiro.
+- **Removido:** Visão Geral Meta, Campanhas, Conjuntos, Anúncios, abas do Plano
+  de Saúde (Executivo/Visão Geral/Kanban), Consórcio (páginas + `POST
+  /api/consorcio/ingest`), link público `/publico/[token]` e o basic auth
+  (`src/middleware.ts`). Tudo recuperável no commit `chore: versiona WIP pendente`.
+- **Sem login, sem dado pessoal:** a página é pública (noindex). Por isso só o
+  primeiro nome do lead é exibido; nomes que parecem contato (dígitos ou `@`)
+  viram "Sem nome". Nome completo, telefone e id de conversa não são enviados ao
+  browser (`recentMoves` só devolve campos não identificáveis; coberto por teste).
+- **Categorias:** 6 etapas de saúde agrupando as 11 colunas do CRM por palavra-chave
+  (`ceoStageOf`). Perdidos fora do funil, como indicador.
+- **Não reproduzido da referência:** "Por que perdemos" e "Responsável" — o
+  snapshot do CRM não traz motivo de perda nem responsável.
+- **Testes:** primeiro runner do projeto, `node --test` com type stripping nativo
+  do Node (sem dependência nova). `tsconfig` ganhou `allowImportingTsExtensions`.

@@ -1,0 +1,159 @@
+import { Suspense } from 'react';
+import { HeroFunnel, STAGE_COLOR } from '@/components/ceo/hero-funnel';
+import { PeriodPills } from '@/components/ceo/period-pills';
+import { RecentTable } from '@/components/ceo/recent-table';
+import { RefreshButton } from '@/components/ceo/refresh-button';
+import { StatStrip } from '@/components/ceo/stat-strip';
+import { Skeleton } from '@/components/ui/skeleton';
+import { resolveCeoPeriod, todayInBrazil } from '@/lib/ceo-period';
+import { env } from '@/lib/env';
+import { fmtCurrency, fmtInteger } from '@/lib/format';
+import { aggregateRows } from '@/lib/kpi-calc';
+import { fetchInsights } from '@/lib/meta-api';
+import { periodLabel } from '@/lib/period';
+import { ceoSummary, earliestEntry, loadSnapshot, recentMoves } from '@/lib/plano-saude';
+
+type SP = Promise<{ p?: string; since?: string; until?: string }>;
+
+export default function CeoPage({ searchParams }: { searchParams: SP }) {
+  return (
+    <main className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
+      <Suspense fallback={<TopBarSkeleton />}>
+        <TopBar searchParams={searchParams} />
+      </Suspense>
+      <Suspense fallback={<BodySkeleton />}>
+        <Body searchParams={searchParams} />
+      </Suspense>
+    </main>
+  );
+}
+
+async function TopBar({ searchParams }: { searchParams: SP }) {
+  const sp = await searchParams;
+  const { preset, period } = resolveCeoPeriod(sp);
+  return (
+    <header className="flex flex-col gap-5 pb-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-baseline gap-3">
+          <span
+            aria-hidden="true"
+            className="inline-flex size-7 translate-y-0.5 items-center justify-center self-center rounded bg-primary font-bold font-display text-primary-foreground"
+          >
+            f
+          </span>
+          <h1 className="font-display font-semibold text-2xl text-foreground tracking-tight sm:text-3xl">
+            Plano de Saúde
+          </h1>
+          <span className="hidden text-muted-foreground text-sm sm:inline">Criteria PME</span>
+        </div>
+        <RefreshButton />
+      </div>
+      <PeriodPills
+        preset={preset}
+        since={preset === null ? (period?.since ?? null) : null}
+        until={preset === null ? (period?.until ?? null) : null}
+      />
+    </header>
+  );
+}
+
+async function Body({ searchParams }: { searchParams: SP }) {
+  const sp = await searchParams;
+  const { period } = resolveCeoPeriod(sp);
+  const snapshot = await loadSnapshot();
+
+  if (!snapshot) {
+    return (
+      <div className="rounded-2xl border border-border border-dashed bg-card p-10 text-center text-muted-foreground">
+        Aguardando a primeira coleta do CRM.
+      </div>
+    );
+  }
+
+  const s = ceoSummary(snapshot.cards, period);
+  const rows = recentMoves(snapshot.cards, period, 12);
+
+  // Mídia no mesmo recorte. "Tudo" = desde o lead mais antigo do CRM até hoje.
+  const today = todayInBrazil();
+  const mediaPeriod = period ?? { since: earliestEntry(snapshot.cards) ?? today, until: today };
+  const spend = await fetchInsights({
+    accountId: env.META_AD_ACCOUNT_ID,
+    level: 'account',
+    period: mediaPeriod,
+  })
+    .then((r) => aggregateRows(r).spend)
+    .catch(() => null);
+
+  const custoVenda = spend != null && s.vendas > 0 ? spend / s.vendas : null;
+  const pct = (v: number) => `${(v * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`;
+
+  return (
+    <>
+      <HeroFunnel s={s} />
+      <StatStrip
+        stats={[
+          { label: 'Em andamento', value: fmtInteger(s.emAndamento), note: 'ainda no funil' },
+          {
+            label: 'Vendas',
+            value: fmtInteger(s.vendas),
+            note: 'fechado ganho + boleto pago',
+            color: STAGE_COLOR.vendas,
+          },
+          {
+            label: 'Perdidos',
+            value: fmtInteger(s.perdidos.count),
+            note: s.total > 0 ? `${pct(s.perdidos.share)} dos leads` : undefined,
+            color: STAGE_COLOR.perdidos,
+          },
+          {
+            label: 'Investimento em mídia',
+            value: spend == null ? '—' : fmtCurrency(Math.round(spend)).replace(/,00$/, ''),
+            note: spend == null ? 'Meta indisponível agora' : 'Meta Ads',
+          },
+          {
+            label: 'Custo por venda',
+            value:
+              custoVenda == null ? '—' : fmtCurrency(Math.round(custoVenda)).replace(/,00$/, ''),
+            note: 'investimento ÷ vendas',
+          },
+        ]}
+      />
+      <RecentTable rows={rows} />
+      <p className="max-w-[75ch] text-muted-foreground text-xs leading-relaxed">
+        {period
+          ? `Leads que entraram no CRM entre ${periodLabel(period)}`
+          : 'Todos os leads do CRM'}
+        , na etapa em que estão agora. Vendas = Fechado ganho + Boleto pago; o valor das vendas
+        considera o volume ×3 que retorna para a operação. Volume em negociação soma o valor das
+        propostas em cotação e negociação. CRM atualizado em{' '}
+        <span className="tabular">
+          {new Date(snapshot.generatedAt).toLocaleString('pt-BR', {
+            timeZone: 'America/Sao_Paulo',
+            dateStyle: 'short',
+            timeStyle: 'short',
+          })}
+        </span>
+        .
+      </p>
+    </>
+  );
+}
+
+function TopBarSkeleton() {
+  return (
+    <div className="flex flex-col gap-5 pb-2">
+      <Skeleton className="h-9 w-64" />
+      <Skeleton className="h-11 w-[30rem] max-w-full rounded-full" />
+    </div>
+  );
+}
+
+function BodySkeleton() {
+  return (
+    <>
+      <Skeleton className="h-[30rem] rounded-2xl" />
+      <Skeleton className="h-28 rounded-2xl" />
+      <Skeleton className="h-96 rounded-2xl" />
+    </>
+  );
+}

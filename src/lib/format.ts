@@ -58,3 +58,16 @@ export function fmtMultiplier(v: number | null | undefined): string {
   if (v == null || !Number.isFinite(v)) return '—';
   return `${decimal.format(v)}x`;
 }
+
+const compactCurrency = new Intl.NumberFormat(LOCALE, {
+  style: 'currency',
+  currency: 'BRL',
+  notation: 'compact',
+  maximumFractionDigits: 1,
+});
+
+/** "R$ 1,2 mi", "R$ 400 mil": valores grandes legíveis de longe (projetor). */
+export function fmtCompactCurrency(v: number | null | undefined): string {
+  if (v == null || !Number.isFinite(v)) return '—';
+  return compactCurrency.format(v);
+}

@@ -1,0 +1,363 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-05T00:00:00.000Z",
+  "title": "Design System: Marketing BI — Criteria × Finture",
+  "extensions": {
+    "colorMeta": {
+      "finture-sienna": {
+        "role": "primary",
+        "displayName": "Finture Sienna",
+        "canonical": "oklch(64% 0.16 35)",
+        "tonalRamp": [
+          "oklch(20% 0.06 35)",
+          "oklch(30% 0.09 35)",
+          "oklch(40% 0.12 35)",
+          "oklch(50% 0.14 35)",
+          "oklch(64% 0.16 35)",
+          "oklch(74% 0.13 35)",
+          "oklch(85% 0.08 40)",
+          "oklch(94% 0.04 45)"
+        ]
+      },
+      "ink-black": {
+        "role": "neutral",
+        "displayName": "Ink Black",
+        "canonical": "oklch(15% 0.005 50)",
+        "tonalRamp": [
+          "oklch(10% 0.004 50)",
+          "oklch(15% 0.005 50)",
+          "oklch(22% 0.006 50)",
+          "oklch(32% 0.007 50)",
+          "oklch(45% 0.008 55)",
+          "oklch(60% 0.01 60)",
+          "oklch(78% 0.014 70)",
+          "oklch(92% 0.018 75)"
+        ]
+      },
+      "manuscript-cream": {
+        "role": "neutral",
+        "displayName": "Manuscript Cream",
+        "canonical": "oklch(95% 0.02 75)",
+        "tonalRamp": [
+          "oklch(20% 0.008 70)",
+          "oklch(35% 0.012 70)",
+          "oklch(50% 0.015 70)",
+          "oklch(65% 0.018 72)",
+          "oklch(78% 0.02 73)",
+          "oklch(88% 0.022 74)",
+          "oklch(95% 0.02 75)",
+          "oklch(98% 0.012 78)"
+        ]
+      },
+      "soft-ink": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "oklch(18% 0.005 50)",
+        "tonalRamp": [
+          "oklch(12% 0.004 50)",
+          "oklch(18% 0.005 50)",
+          "oklch(25% 0.006 50)",
+          "oklch(35% 0.007 55)",
+          "oklch(48% 0.008 60)",
+          "oklch(64% 0.012 65)",
+          "oklch(80% 0.015 70)",
+          "oklch(92% 0.018 75)"
+        ]
+      },
+      "lifted-charcoal": {
+        "role": "neutral",
+        "displayName": "Lifted Charcoal",
+        "canonical": "oklch(20% 0.005 50)",
+        "tonalRamp": [
+          "oklch(13% 0.004 50)",
+          "oklch(20% 0.005 50)",
+          "oklch(28% 0.006 50)",
+          "oklch(38% 0.008 55)",
+          "oklch(50% 0.01 60)",
+          "oklch(65% 0.013 65)",
+          "oklch(80% 0.015 70)",
+          "oklch(92% 0.018 75)"
+        ]
+      },
+      "hairline-sepia": {
+        "role": "neutral",
+        "displayName": "Hairline Sepia",
+        "canonical": "oklch(28% 0.005 50)",
+        "tonalRamp": [
+          "oklch(15% 0.004 50)",
+          "oklch(22% 0.005 50)",
+          "oklch(28% 0.005 50)",
+          "oklch(38% 0.007 55)",
+          "oklch(52% 0.01 60)",
+          "oklch(68% 0.012 65)",
+          "oklch(82% 0.014 70)",
+          "oklch(94% 0.016 75)"
+        ]
+      },
+      "warm-ash": {
+        "role": "neutral",
+        "displayName": "Warm Ash",
+        "canonical": "oklch(70% 0.015 75)",
+        "tonalRamp": [
+          "oklch(20% 0.008 70)",
+          "oklch(32% 0.01 72)",
+          "oklch(45% 0.013 73)",
+          "oklch(58% 0.014 74)",
+          "oklch(70% 0.015 75)",
+          "oklch(80% 0.014 76)",
+          "oklch(88% 0.012 78)",
+          "oklch(95% 0.008 80)"
+        ]
+      },
+      "alarm-rust": {
+        "role": "secondary",
+        "displayName": "Alarm Rust",
+        "canonical": "oklch(58% 0.21 25)",
+        "tonalRamp": [
+          "oklch(20% 0.08 25)",
+          "oklch(30% 0.12 25)",
+          "oklch(42% 0.17 25)",
+          "oklch(58% 0.21 25)",
+          "oklch(70% 0.18 28)",
+          "oklch(82% 0.13 32)",
+          "oklch(91% 0.07 38)",
+          "oklch(96% 0.03 45)"
+        ]
+      },
+      "peach-ribbon": {
+        "role": "tertiary",
+        "displayName": "Peach Ribbon",
+        "canonical": "oklch(80% 0.13 65)",
+        "tonalRamp": [
+          "oklch(28% 0.05 65)",
+          "oklch(40% 0.08 65)",
+          "oklch(54% 0.11 65)",
+          "oklch(67% 0.13 65)",
+          "oklch(80% 0.13 65)",
+          "oklch(88% 0.10 68)",
+          "oklch(93% 0.06 72)",
+          "oklch(97% 0.03 78)"
+        ]
+      },
+      "atelier-teal": {
+        "role": "tertiary",
+        "displayName": "Atelier Teal",
+        "canonical": "oklch(70% 0.06 175)",
+        "tonalRamp": [
+          "oklch(22% 0.025 175)",
+          "oklch(35% 0.04 175)",
+          "oklch(48% 0.05 175)",
+          "oklch(60% 0.06 175)",
+          "oklch(70% 0.06 175)",
+          "oklch(82% 0.045 178)",
+          "oklch(90% 0.03 180)",
+          "oklch(96% 0.015 182)"
+        ]
+      },
+      "olive-field": {
+        "role": "tertiary",
+        "displayName": "Olive Field",
+        "canonical": "oklch(80% 0.08 115)",
+        "tonalRamp": [
+          "oklch(28% 0.035 115)",
+          "oklch(42% 0.05 115)",
+          "oklch(56% 0.065 115)",
+          "oklch(68% 0.075 115)",
+          "oklch(80% 0.08 115)",
+          "oklch(88% 0.06 118)",
+          "oklch(93% 0.04 122)",
+          "oklch(97% 0.02 128)"
+        ]
+      },
+      "terracotta-rose": {
+        "role": "tertiary",
+        "displayName": "Terracotta Rose",
+        "canonical": "oklch(60% 0.10 15)",
+        "tonalRamp": [
+          "oklch(22% 0.04 15)",
+          "oklch(35% 0.065 15)",
+          "oklch(48% 0.085 15)",
+          "oklch(60% 0.10 15)",
+          "oklch(72% 0.085 18)",
+          "oklch(83% 0.06 22)",
+          "oklch(91% 0.035 28)",
+          "oklch(96% 0.015 35)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Título de página principal (h1). Aparece uma vez por tela."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Seções grandes dentro da página, cabeçalho de modal. Raro."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Cabeçalho de seção (h2): 'Tendência diária', 'Top campanhas'."
+      },
+      "metric": {
+        "displayName": "Metric",
+        "purpose": "Números KPI dentro do card. Tabular, tracking apertado para densidade."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto corrido, descrições, células de tabela. Limite 65–75ch em prosa."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Rótulos KPI, cabeçalhos de coluna, tags de status. Único uppercase do sistema."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-floating",
+        "value": "0 8px 24px -8px rgba(0,0,0,0.5), 0 2px 6px -2px rgba(0,0,0,0.4)",
+        "purpose": "Único uso: popover, dropdown, calendar. Quando flutuam sobre o conteúdo. Nunca em card ou botão."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-quart",
+        "value": "cubic-bezier(0.25, 1, 0.5, 1)",
+        "purpose": "Easing padrão para transições. Exponencial out, sem bounce."
+      },
+      {
+        "name": "duration-fast",
+        "value": "150ms",
+        "purpose": "Transições de hover (color, background, border)."
+      },
+      {
+        "name": "duration-normal",
+        "value": "250ms",
+        "purpose": "Transições de UI (popover open, transform)."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "max", "value": "1600px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ação primária rara — submit crítico, CTA hero. Sienna sobre Ink. Foco anel sienna.",
+      "html": "<button class=\"ds-btn-primary\">Atualizar dados</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.25rem; padding: 0 1rem; background: #ea622d; color: #1b1a1a; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; line-height: 1; border: none; border-radius: 0.5rem; cursor: pointer; transition: background 150ms cubic-bezier(0.25,1,0.5,1), transform 150ms cubic-bezier(0.25,1,0.5,1); } .ds-btn-primary:hover { background: oklch(72% 0.15 35); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: 2px solid #ea622d; outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Botão padrão de operação no header. Outline em sépia, fundo transparente, hover preenche com Lifted Charcoal.",
+      "html": "<button class=\"ds-btn-outline\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/></svg> Atualizar</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2rem; padding: 0 0.875rem; background: transparent; color: #f8f1e7; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; line-height: 1; border: 1px solid #3a3938; border-radius: 0.5rem; cursor: pointer; transition: background 150ms cubic-bezier(0.25,1,0.5,1), border-color 150ms cubic-bezier(0.25,1,0.5,1); } .ds-btn-outline:hover { background: #2a2928; border-color: #4a4948; } .ds-btn-outline:focus-visible { outline: 2px solid #ea622d; outline-offset: 2px; }"
+    },
+    {
+      "name": "KPI Card (Hero)",
+      "kind": "card",
+      "refersTo": "card-kpi-hero",
+      "description": "Variante hero do KPI card. Métrica em 48px, padding 1.5rem. Reservado para Investimento / CPL / ROAS no overview.",
+      "html": "<article class=\"ds-kpi-hero\"><span class=\"ds-kpi-label\">Investimento</span><span class=\"ds-kpi-metric\">R$ 84.230,12</span><div class=\"ds-kpi-foot\"><span class=\"ds-chip-up\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"7\" y1=\"17\" x2=\"17\" y2=\"7\"/><polyline points=\"7 7 17 7 17 17\"/></svg>+12,4%</span><span class=\"ds-kpi-ref\">vs período anterior</span></div></article>",
+      "css": ".ds-kpi-hero { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.5rem; background: #232220; border: 1px solid #3a3938; border-radius: 0.75rem; color: #f8f1e7; } .ds-kpi-hero .ds-kpi-label { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #b0a89c; } .ds-kpi-hero .ds-kpi-metric { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 3rem; font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; color: #f8f1e7; font-feature-settings: 'tnum','zero'; } .ds-kpi-hero .ds-kpi-foot { display: flex; align-items: center; gap: 0.5rem; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.75rem; } .ds-kpi-hero .ds-chip-up { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.125rem 0.375rem; background: #2a2928; color: #b7c68b; border-radius: 0.25rem; font-weight: 500; font-feature-settings: 'tnum'; } .ds-kpi-hero .ds-kpi-ref { color: #b0a89c; }"
+    },
+    {
+      "name": "KPI Card (Standard)",
+      "kind": "card",
+      "refersTo": "card-kpi",
+      "description": "KPI card padrão para os 9+ KPIs secundários do grid. Métrica em 30px.",
+      "html": "<article class=\"ds-kpi\"><span class=\"ds-kpi-label\">CPC</span><span class=\"ds-kpi-metric\">R$ 1,84</span><div class=\"ds-kpi-foot\"><span class=\"ds-chip-down\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"7\" y1=\"7\" x2=\"17\" y2=\"17\"/><polyline points=\"7 17 17 17 17 7\"/></svg>−4,1%</span><span class=\"ds-kpi-ref\">vs período anterior</span></div></article>",
+      "css": ".ds-kpi { display: flex; flex-direction: column; gap: 0.375rem; padding: 1.25rem; background: #232220; border: 1px solid #3a3938; border-radius: 0.75rem; color: #f8f1e7; } .ds-kpi .ds-kpi-label { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #b0a89c; } .ds-kpi .ds-kpi-metric { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 1.875rem; font-weight: 600; line-height: 1.05; letter-spacing: -0.015em; color: #f8f1e7; font-feature-settings: 'tnum','zero'; } .ds-kpi .ds-kpi-foot { display: flex; align-items: center; gap: 0.5rem; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.75rem; } .ds-kpi .ds-chip-down { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.125rem 0.375rem; background: #2a2928; color: #c26d74; border-radius: 0.25rem; font-weight: 500; font-feature-settings: 'tnum'; } .ds-kpi .ds-kpi-ref { color: #b0a89c; }"
+    },
+    {
+      "name": "Brand Mark",
+      "kind": "custom",
+      "refersTo": "brand-mark",
+      "description": "Quadrado sienna com 'f' Space Grotesk 700. Único bloco onde sienna ocupa área cheia. Assinatura.",
+      "html": "<div class=\"ds-brand\"><span class=\"ds-brand-mark\">f</span><span class=\"ds-brand-word\">Marketing BI</span></div>",
+      "css": ".ds-brand { display: inline-flex; align-items: center; gap: 0.625rem; } .ds-brand-mark { display: inline-flex; align-items: center; justify-content: center; width: 1.75rem; height: 1.75rem; background: #ea622d; color: #1b1a1a; border-radius: 0.25rem; font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 1.125rem; font-weight: 700; line-height: 1; } .ds-brand-word { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; color: #f8f1e7; }"
+    },
+    {
+      "name": "Nav Link (Active)",
+      "kind": "nav",
+      "refersTo": "nav-link-active",
+      "description": "Link de navegação no estado ativo. Texto cream, sublinhado de 2px sienna 4px abaixo. Sem fundo.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" class=\"ds-nav-link ds-active\">Visão Geral</a><a href=\"#\" class=\"ds-nav-link\">Campanhas</a><a href=\"#\" class=\"ds-nav-link\">Conjuntos</a><a href=\"#\" class=\"ds-nav-link\">Anúncios</a></nav>",
+      "css": ".ds-nav { display: inline-flex; gap: 0.25rem; } .ds-nav-link { position: relative; padding: 0.375rem 0.75rem; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; color: #b0a89c; text-decoration: none; border-radius: 0.5rem; transition: color 150ms cubic-bezier(0.25,1,0.5,1); } .ds-nav-link:hover { color: #f8f1e7; } .ds-nav-link.ds-active { color: #f8f1e7; } .ds-nav-link.ds-active::after { content: ''; position: absolute; left: 0.75rem; right: 0.75rem; bottom: -0.5rem; height: 2px; background: #ea622d; border-radius: 2px; } .ds-nav-link:focus-visible { outline: 2px solid #ea622d; outline-offset: 2px; }"
+    },
+    {
+      "name": "Data Table Row",
+      "kind": "custom",
+      "refersTo": "table-cell",
+      "description": "Linha de tabela com nome (sticky), valor numérico (tabular-nums) e delta. Tipografia técnica do operador.",
+      "html": "<table class=\"ds-table\"><thead><tr><th class=\"ds-th ds-th-name\">Nome</th><th class=\"ds-th\">Investimento</th><th class=\"ds-th\">CPL</th><th class=\"ds-th\">ROAS</th></tr></thead><tbody><tr class=\"ds-tr\"><td class=\"ds-td ds-td-name\">Lead Gen — Auto Forte</td><td class=\"ds-td ds-td-num\">R$ 12.480,00<span class=\"ds-d-up\">+8,2%</span></td><td class=\"ds-td ds-td-num\">R$ 24,18<span class=\"ds-d-down\">−3,1%</span></td><td class=\"ds-td ds-td-num\">3,42×<span class=\"ds-d-up\">+12,0%</span></td></tr></tbody></table>",
+      "css": ".ds-table { width: 100%; border-collapse: collapse; background: #232220; border: 1px solid #3a3938; border-radius: 0.5rem; overflow: hidden; font-family: 'IBM Plex Sans', system-ui, sans-serif; } .ds-table .ds-th { padding: 0.625rem 0.75rem; text-align: right; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #b0a89c; border-bottom: 1px solid #3a3938; background: #232220; } .ds-table .ds-th-name { text-align: left; position: sticky; left: 0; } .ds-table .ds-tr { border-bottom: 1px solid #3a3938; transition: background 150ms cubic-bezier(0.25,1,0.5,1); } .ds-table .ds-tr:hover { background: #2a2928; } .ds-table .ds-tr:last-child { border-bottom: none; } .ds-table .ds-td { padding: 0.625rem 0.75rem; font-size: 0.875rem; color: #f8f1e7; vertical-align: middle; } .ds-table .ds-td-name { font-weight: 500; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; position: sticky; left: 0; background: #232220; } .ds-table .ds-tr:hover .ds-td-name { background: #2a2928; } .ds-table .ds-td-num { text-align: right; font-feature-settings: 'tnum'; line-height: 1.3; } .ds-table .ds-d-up { display: block; color: #b7c68b; font-size: 0.6875rem; font-feature-settings: 'tnum'; } .ds-table .ds-d-down { display: block; color: #c26d74; font-size: 0.6875rem; font-feature-settings: 'tnum'; }"
+    },
+    {
+      "name": "Period Selector Trigger",
+      "kind": "input",
+      "refersTo": "button-outline",
+      "description": "Trigger do period selector. Outline button com ícone de calendário e label do período corrente.",
+      "html": "<button class=\"ds-period-trigger\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><line x1=\"16\" y1=\"2\" x2=\"16\" y2=\"6\"/><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"6\"/><line x1=\"3\" y1=\"10\" x2=\"21\" y2=\"10\"/></svg><span>05/04/26 – 04/05/26</span></button>",
+      "css": ".ds-period-trigger { display: inline-flex; align-items: center; gap: 0.5rem; height: 2rem; padding: 0 0.875rem; background: transparent; color: #f8f1e7; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; line-height: 1; border: 1px solid #3a3938; border-radius: 0.5rem; cursor: pointer; transition: background 150ms cubic-bezier(0.25,1,0.5,1), border-color 150ms cubic-bezier(0.25,1,0.5,1); font-feature-settings: 'tnum'; } .ds-period-trigger:hover { background: #2a2928; border-color: #4a4948; } .ds-period-trigger:focus-visible { outline: 2px solid #ea622d; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Operator's Notebook",
+    "overview": "Esse sistema é um caderno de campo do analista de mídia. O Ink Black (#1b1a1a) é a tinta. O Manuscript Cream (#f8f1e7) é o papel — virado de cabeça pra baixo, vira a cor do texto sobre a tinta. O Finture Sienna (#ea622d) é o marca-texto: usado raramente, sempre para sublinhar o que decide algo. As cores secundárias da paleta — peach, atelier teal, olive, dusty rose — são as canetas coloridas do operador, reservadas para gráficos onde categoria importa. Em todo o resto, o sistema é monocromático sobre o ink. A energia é editorial no esqueleto e produto no detalhe: as margens, a escala tipográfica display e o ritmo de seção vêm do mundo de revista; tabular-nums, sticky columns, deltas com seta e densidade real vêm do mundo de plantão. Nada brilha por brilhar. O laranja queima onde faz sentido — botão primário, foco, marca, barra principal do gráfico — e some no resto.",
+    "keyCharacteristics": [
+      "Dark warm-brown como pele (não cinza-azulado)",
+      "Paleta earthy de revista, não categórica saturada",
+      "Space Grotesk display + IBM Plex Sans body + tabular-nums obrigatório nos números",
+      "Flat por padrão; sombras só em popover/dropdown que precisam descolar",
+      "Laranja Finture é instrumento (≤10% da tela), não decoração",
+      "Densidade real de produto profissional, ritmo editorial entre seções"
+    ],
+    "rules": [
+      { "name": "The 10% Rule", "body": "Sienna ocupa no máximo 10% da área visível em qualquer tela. Se ultrapassar, alguma decisão de hierarquia está errada — não é a cor que está demais, é a hierarquia que está mal definida.", "section": "colors" },
+      { "name": "The No-Cool-Gray Rule", "body": "Nenhum cinza neutro frio. Todo neutro é sépia (chroma > 0). #1b1a1a ≠ #000000; #3a3938 ≠ #3a3a3a. Se um neutro parecer cinza chumbo, está errado — refazer em sépia.", "section": "colors" },
+      { "name": "The Earthy Chart Rule", "body": "Charts usam exclusivamente a paleta chart-1..5 (sienna → peach → teal → olive → rose). Proibido categórico saturado (azul/roxo/verde-bandeira). Se o chart precisar de mais de 5 séries, a história está errada antes da cor.", "section": "colors" },
+      { "name": "The Tabular Number Rule", "body": "Todo número em UI usa font-feature-settings: 'tnum'. A classe .tabular (já em globals.css) é a forma curta. Sem isso, números de KPI se mexem entre estados e o leitor perde âncora visual.", "section": "typography" },
+      { "name": "The Cap-Lock-Once Rule", "body": "Uppercase aparece apenas no token Label (rótulos de 12px). Em qualquer outro tamanho, é proibido. Se um header parecer querer caixa-alta, troque por Title em weight 600.", "section": "typography" },
+      { "name": "The 65ch Body Rule", "body": "Texto corrido de prosa (descrições, tooltips longos, copy de erro) capa em max-width: 65ch. Em células de tabela e KPIs, não aplica — esses não são prosa.", "section": "typography" },
+      { "name": "The Flat-Card Rule", "body": "Cards nunca têm box-shadow. Profundidade de card vem só da diferença tonal (bg-card #232220 sobre bg-background #1b1a1a) e da borda 1px Hairline Sepia. Quem adiciona sombra a card está pedindo Material/Bootstrap, não isso.", "section": "elevation" },
+      { "name": "The Single-Shadow Rule", "body": "Existe um vocabulário de sombra (shadow-floating) e ele é usado um caso: popover/dropdown. Não criar segunda variação ('shadow-sm', 'shadow-md'). Se um elemento precisa de outra sombra, está errado de início.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do usar Manuscript Cream #f8f1e7 para texto primário e números KPI. É o papel.",
+      "Do usar Finture Sienna #ea622d em ≤10% de qualquer tela. É o marca-texto.",
+      "Do usar tabular-nums (font-feature-settings: 'tnum') em todo número de UI.",
+      "Do usar Soft Ink #232220 (cor sólida) em cards. Substituir todo bg-card/40 ou /60 herdado de shadcn por cor sólida.",
+      "Do combinar ícone + cor em deltas. Nunca depender só de verde/vermelho.",
+      "Do usar Space Grotesk em headers e métricas. IBM Plex Sans em corpo. Nada mais.",
+      "Do dar variação de tamanho aos KPIs: 2-3 em hero (Investimento, CPL, ROAS), o resto em tamanho padrão. Hierarquia explícita.",
+      "Do usar Olive Field para delta positivo, Terracotta Rose para delta negativo, Warm Ash para flat.",
+      "Do usar borda 1px Hairline Sepia para definir superfície. É o único divisor permitido.",
+      "Do respeitar prefers-reduced-motion: trocar transições por fade simples."
+    ],
+    "donts": [
+      "Don't usar gradientes em backgrounds, em texto, em cards. Nenhum gradiente. Nunca.",
+      "Don't usar background-clip: text com gradiente. Texto é sólido.",
+      "Don't usar box-shadow em cards ou botões. Profundidade vem de tom + borda. Sombra só em popover/dropdown.",
+      "Don't criar grid de KPIs uniforme 4×3 com todos do mesmo tamanho. Identical card grid banido. KPIs principais ganham hero; secundários, padrão.",
+      "Don't usar paleta categórica saturada em chart (azul/roxo/verde-bandeira). Só chart-1..5 da paleta earthy.",
+      "Don't parecer Looker Studio / Power BI corporativo — caixinhas brancas com sombra, filtros genéricos no topo, paleta saturada zero personalidade. Foi explicitamente rejeitado em PRODUCT.md.",
+      "Don't parecer Material/Bootstrap padrão — sombra elevada, cantos arredondados sem intenção, paleta Material. Também rejeitado.",
+      "Don't parecer template hero-metric SaaS — número gigante + label miúdo + gradiente + +12% verde fluor. Clichê de PRODUCT.md.",
+      "Don't parecer dashboard genérico shadcn — dark + neutro cinza azulado + accent azul + cards uniformes. O motivo de existir esse painel é não ser isso.",
+      "Don't usar border-left ou border-right > 1px como acento colorido em cards/alertas. Banido.",
+      "Don't usar #000000 ou #ffffff cru. Sempre tingido em sépia.",
+      "Don't usar uppercase fora do token Label 12px. Header em CAIXA-ALTA é gritaria.",
+      "Don't usar cinza azulado neutro (Tailwind slate, zinc, gray). Todo neutro tem chroma > 0 puxando para sépia.",
+      "Don't animar propriedades de layout (width, height, top, left, padding). Só transform e opacity.",
+      "Don't usar bounce/elastic nas transições. Easing exponencial out (quart/quint)."
+    ]
+  }
+}
