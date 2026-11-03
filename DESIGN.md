@@ -316,6 +316,8 @@ Sombras existem em **um único caso**: floating UI que precisa descolar visualme
 - **Stat strip** (`stat-strip.tsx`): uma faixa única com células separadas por fios 1px `Hairline Sepia`, não cinco cards soltos.
 - **Period pills** (`period-pills.tsx`): grupo pílula `Soft Ink`; ativo em cream sobre ink. Datas livres em `input[type=date]` com `color-scheme: dark`.
 - **Dado pessoal:** a página é pública; tabela mostra só primeiro nome.
+- **Top criativos** (`top-creatives.tsx`): 3 colunas separadas por fio 1px dentro de um container; imagem 4:5 com a posição (1º, 2º, 3º) sobre ela; Leads · CPL · Investido em métrica, CTR em texto secundário.
+- **Diagnóstico** (`diagnosis.tsx`): botão primário (sienna) no topo, a única ação primária da página. O resultado abre inline abaixo do período (sem modal), em container com borda sienna/40. Cada achado: prioridade com ícone + cor (alta rose, média peach, baixa ash), área, título, evidência em texto secundário e "O que fazer" com rótulo sienna. Aviso de IA no rodapé.
 
 ## 6. Do's and Don'ts
 

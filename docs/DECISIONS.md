@@ -57,3 +57,20 @@ onde havia ambiguidade.
   snapshot do CRM não traz motivo de perda nem responsável.
 - **Testes:** primeiro runner do projeto, `node --test` com type stripping nativo
   do Node (sem dependência nova). `tsconfig` ganhou `allowImportingTsExtensions`.
+
+## 2026-11-03 · Criativos de volta + botão Diagnóstico com IA
+
+- **Criativos:** a seção saiu sem querer com a aba Executivo no PR #14. Voltou como
+  top 3 por leads. Anúncios com o mesmo nome são somados (o mesmo criativo roda em
+  vários conjuntos; sem isso o top 3 era o mesmo anúncio repetido). A imagem é pedida
+  em 800×1000 (`thumbnail_width/height`); sem isso a Meta devolve 64px.
+- **Diagnóstico:** Server Action recalcula os números no servidor a partir só dos
+  parâmetros da URL (o browser não manda dados) e chama `claude-opus-5-5` com saída
+  estruturada (Zod) e esforço `medium`. Fallback automático do lado do servidor
+  (`fallbacks: "default"`) se o modelo recusar. Entrada para a IA só com agregados;
+  teste garante que nome, telefone e id de lead não entram.
+- **Custo numa página pública:** `'use cache: remote'` com revalidação de 6 h, por
+  recorte, compartilhado entre instâncias na Vercel. Intervalos livres fora de
+  2024..hoje são recusados antes de chamar a IA.
+- **MCP da Meta:** é um conector da conta Claude do usuário, não acessível pelo site.
+  O site usa a Graph API própria, que traz os mesmos números (sem os benchmarks de mercado).

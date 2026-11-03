@@ -36,7 +36,16 @@ primeiro nome do lead; telefone, e-mail e sobrenome nunca saem do servidor).
   "Fechado - Perdido" aparece à parte, no indicador **Perdidos**.
 - **Indicadores:** em andamento · vendas · perdidos · investimento em mídia
   (Meta, mesmo período) · custo por venda.
+- **Criativos com melhor desempenho:** os 3 anúncios com mais leads no período
+  (anúncios de mesmo nome em conjuntos diferentes são somados), com imagem, leads,
+  CPL e investimento.
 - **Últimas movimentações:** 12 cards mais recentes (primeiro nome, etapa, valor real do card, datas).
+- **Botão Diagnóstico:** a IA (Claude Opus 5.5) lê os números do período (funil,
+  mídia, criativos, comparação com o período anterior) e devolve de 3 a 6 achados em
+  tom de consultor: prioridade, evidência nos números e o que fazer na semana. Só
+  números agregados vão para a IA, nenhum dado de lead. Cada diagnóstico fica guardado
+  por 6 h por período (`'use cache: remote'`), então cliques repetidos não geram custo.
+  Sem `ANTHROPIC_API_KEY` o botão aparece desabilitado.
 
 ## Estrutura do projeto
 
@@ -49,11 +58,15 @@ src/
 │   └── globals.css             # tokens Finture (Tailwind v4)
 ├── components/
 │   ├── ui/                     # primitivas shadcn/ui
-│   └── ceo/                    # hero-funnel · stat-strip · recent-table · period-pills · refresh-button
+│   └── ceo/                    # hero-funnel · stat-strip · top-creatives · recent-table · period-pills · diagnosis · refresh-button
 └── lib/
     ├── plano-saude.ts          # snapshot do CRM + ceoSummary / recentMoves / firstName
     ├── plano-saude.test.ts     # testes (node:test)
     ├── ceo-period.ts           # Tudo / Hoje / 7d / 30d / intervalo livre
+    ├── ceo-data.ts             # dados da página (CRM + Meta + criativos) por recorte
+    ├── creatives.ts            # top criativos da Meta (com imagem)
+    ├── diagnosis.ts            # chamada ao Claude + cache de 6 h
+    ├── diagnosis-input.ts      # números agregados enviados à IA (testado: sem PII)
     ├── meta-api.ts             # cliente Graph com 'use cache'
     ├── kpi-calc.ts · meta-types.ts · conversion-mapping.ts · period.ts
     └── format.ts · env.ts · utils.ts
@@ -146,7 +159,7 @@ Deploy no **Vercel** (App Router + Cache Components). O modelo de cache usa
 "Atualizar" dispara a Server Action `refreshInsights()` → `updateTag(...)`.
 Configurar as env vars de Production/Preview no painel do Vercel:
 `META_ACCESS_TOKEN`, `META_AD_ACCOUNT_ID`, `META_GRAPH_API_VERSION`,
-`PLANO_SAUDE_SNAPSHOT_URL`. `BASIC_AUTH_*`, `PUBLIC_SHARE_TOKEN` e `CONSORCIO_*`
+`PLANO_SAUDE_SNAPSHOT_URL` e, para o Diagnóstico, `ANTHROPIC_API_KEY`. `BASIC_AUTH_*`, `PUBLIC_SHARE_TOKEN` e `CONSORCIO_*`
 não são mais lidas e podem ser apagadas do Vercel.
 
 Não há cron / job agendado identificado neste setup inicial.
