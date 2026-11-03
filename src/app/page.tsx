@@ -1,17 +1,17 @@
 import { Suspense } from 'react';
+import { DiagnosisButton, DiagnosisPanel, DiagnosisProvider } from '@/components/ceo/diagnosis';
 import { HeroFunnel, STAGE_COLOR } from '@/components/ceo/hero-funnel';
 import { PeriodPills } from '@/components/ceo/period-pills';
 import { RecentTable } from '@/components/ceo/recent-table';
 import { RefreshButton } from '@/components/ceo/refresh-button';
 import { StatStrip } from '@/components/ceo/stat-strip';
+import { TopCreatives } from '@/components/ceo/top-creatives';
 import { Skeleton } from '@/components/ui/skeleton';
+import { loadCeoData } from '@/lib/ceo-data';
 import { resolveCeoPeriod, todayInBrazil } from '@/lib/ceo-period';
-import { env } from '@/lib/env';
 import { fmtCurrency, fmtInteger } from '@/lib/format';
-import { aggregateRows } from '@/lib/kpi-calc';
-import { fetchInsights } from '@/lib/meta-api';
 import { periodLabel } from '@/lib/period';
-import { ceoSummary, earliestEntry, loadSnapshot, recentMoves } from '@/lib/plano-saude';
+import { recentMoves } from '@/lib/plano-saude';
 
 type SP = Promise<{ p?: string; since?: string; until?: string }>;
 
@@ -32,37 +32,43 @@ async function TopBar({ searchParams }: { searchParams: SP }) {
   const sp = await searchParams;
   const { preset, period } = resolveCeoPeriod(sp);
   return (
-    <header className="flex flex-col gap-5 pb-2">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-baseline gap-3">
-          <span
-            aria-hidden="true"
-            className="inline-flex size-7 translate-y-0.5 items-center justify-center self-center rounded bg-primary font-bold font-display text-primary-foreground"
-          >
-            f
-          </span>
-          <h1 className="font-display font-semibold text-2xl text-foreground tracking-tight sm:text-3xl">
-            Plano de Saúde
-          </h1>
-          <span className="hidden text-muted-foreground text-sm sm:inline">Criteria PME</span>
+    <DiagnosisProvider enabled={Boolean(process.env.ANTHROPIC_API_KEY)}>
+      <header className="flex flex-col gap-5 pb-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-baseline gap-3">
+            <span
+              aria-hidden="true"
+              className="inline-flex size-7 translate-y-0.5 items-center justify-center self-center rounded bg-primary font-bold font-display text-primary-foreground"
+            >
+              f
+            </span>
+            <h1 className="font-display font-semibold text-2xl text-foreground tracking-tight sm:text-3xl">
+              Plano de Saúde
+            </h1>
+            <span className="hidden text-muted-foreground text-sm sm:inline">Criteria PME</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <DiagnosisButton />
+            <RefreshButton />
+          </div>
         </div>
-        <RefreshButton />
-      </div>
-      <PeriodPills
-        preset={preset}
-        since={preset === null ? (period?.since ?? null) : null}
-        until={preset === null ? (period?.until ?? null) : null}
-      />
-    </header>
+        <PeriodPills
+          preset={preset}
+          since={preset === null ? (period?.since ?? null) : null}
+          until={preset === null ? (period?.until ?? null) : null}
+        />
+      </header>
+      <DiagnosisPanel />
+    </DiagnosisProvider>
   );
 }
 
 async function Body({ searchParams }: { searchParams: SP }) {
   const sp = await searchParams;
   const { period } = resolveCeoPeriod(sp);
-  const snapshot = await loadSnapshot();
+  const data = await loadCeoData(period, todayInBrazil());
 
-  if (!snapshot) {
+  if (!data) {
     return (
       <div className="rounded-2xl border border-border border-dashed bg-card p-10 text-center text-muted-foreground">
         Aguardando a primeira coleta do CRM.
@@ -70,19 +76,10 @@ async function Body({ searchParams }: { searchParams: SP }) {
     );
   }
 
-  const s = ceoSummary(snapshot.cards, period);
+  // Mídia e criativos no mesmo recorte; em "Tudo", do lead mais antigo do CRM até hoje.
+  const { snapshot, summary: s, creatives } = data;
+  const spend = data.media?.spend ?? null;
   const rows = recentMoves(snapshot.cards, period, 12);
-
-  // Mídia no mesmo recorte. "Tudo" = desde o lead mais antigo do CRM até hoje.
-  const today = todayInBrazil();
-  const mediaPeriod = period ?? { since: earliestEntry(snapshot.cards) ?? today, until: today };
-  const spend = await fetchInsights({
-    accountId: env.META_AD_ACCOUNT_ID,
-    level: 'account',
-    period: mediaPeriod,
-  })
-    .then((r) => aggregateRows(r).spend)
-    .catch(() => null);
 
   const custoVenda = spend != null && s.vendas > 0 ? spend / s.vendas : null;
   const pct = (v: number) => `${(v * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`;
@@ -118,6 +115,7 @@ async function Body({ searchParams }: { searchParams: SP }) {
           },
         ]}
       />
+      <TopCreatives rows={creatives} />
       <RecentTable rows={rows} />
       <p className="max-w-[75ch] text-muted-foreground text-xs leading-relaxed">
         {period
