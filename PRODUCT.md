@@ -6,17 +6,15 @@ product
 
 ## Users
 
-Três perfis acessam o mesmo painel, em contextos diferentes:
+**CEO / liderança Criteria** é o leitor principal. Abre o link (sem login), muitas vezes no celular ou projetado em reunião, e quer a resposta sem operar nada: quantos leads de plano de saúde chegaram, quanto está em negociação, quanto virou venda e quanto a mídia custou por venda. Texto pequeno e cinza fraco morre nesse cenário.
 
-- **Gestor de mídia / BI (Finture)** — uso diário e semanal. Abre com a pergunta "estamos no caminho ou precisa intervir?". Faz drill-down de overview → campanha → conjunto → anúncio. Usa em monitor de trabalho.
-- **Time de marketing Criteria Seguros** — acompanhamento de performance sem operar Meta Ads diretamente. Quer entender se a verba está rendendo, sem precisar ler documentação para decifrar a tela.
-- **Liderança / diretoria Criteria** — vista de cima, foco em ROI/ROAS e tendência. Aparece em reuniões de status, frequentemente projetado em sala. Texto pequeno e cinza fraco morre nesse cenário.
+O time de mídia/BI (Finture) e o comercial usam a mesma página como placar comum; o drill-down operacional (campanhas, conjuntos, anúncios, Kanban) saiu do produto em 03/11/2026.
 
-Job-to-be-done unificado: **em até 2 segundos, saber se a operação Meta Ads está saudável; em mais 30 segundos, saber onde intervir.**
+Job-to-be-done: **em até 2 segundos, saber se o funil de Plano de Saúde está gerando venda; em mais 10, saber em que etapa os leads estão parados.**
 
 ## Product Purpose
 
-Painel próprio de KPIs Meta Ads (Criteria Seguros) com identidade Finture. Substitui Looker Studio / Ads Manager para a leitura recorrente de performance: investimento, leads, CPL, ROAS, tendência e ranking de campanhas/conjuntos/anúncios.
+Painel do CEO para o funil comercial de Plano de Saúde (Criteria PME), com identidade Finture. Une o CRM (Kanban do Chatwoot) ao investimento Meta Ads numa única página pública e sem dado pessoal.
 
 Sucesso é:
 - Decisão de mídia mais rápida que abrir o Ads Manager.

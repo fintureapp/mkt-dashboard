@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 
 export function RefreshButton() {
   const [pending, startTransition] = useTransition();
-
   return (
     <Button
       type="button"
@@ -17,10 +16,9 @@ export function RefreshButton() {
       disabled={pending}
       onClick={() => startTransition(() => refreshInsights())}
       className="gap-2"
-      aria-label={pending ? 'Atualizando dados' : 'Atualizar dados da Meta'}
     >
       <RefreshCw className={cn(pending && 'animate-spin')} aria-hidden="true" />
-      <span className="hidden sm:inline">{pending ? 'Atualizando…' : 'Atualizar'}</span>
+      {pending ? 'Atualizando…' : 'Atualizar'}
     </Button>
   );
 }

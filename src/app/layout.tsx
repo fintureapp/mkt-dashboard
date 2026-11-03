@@ -15,8 +15,10 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: 'Marketing BI — Criteria Seguros',
-  description: 'Painel de KPIs Meta Ads — CPC, CPL, ROAS, CTR e mais.',
+  title: 'Plano de Saúde · Criteria',
+  description: 'Funil comercial do Plano de Saúde Criteria PME.',
+  // Página pública (sem login): fora de buscadores.
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

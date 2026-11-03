@@ -506,3 +506,179 @@ export function healthFunnel(snapshot: PlanoSnapshot, period?: Period): HealthFu
   ganhoValor *= FECHAMENTO_VALUE_FACTOR;
   return { total, conversas, cotacoes, ganho, qualificados, ganhoValor };
 }
+
+// ---------------------------------------------------------------------------
+// Painel do CEO
+// ---------------------------------------------------------------------------
+
+/**
+ * As 6 etapas do funil de saúde que o CEO lê, agrupando as colunas do CRM.
+ * O agrupamento sai de `stageKind` (palavra-chave), então sobrevive a renomes
+ * de coluna no Kanban. "Fechado - Perdido" não é etapa: vira indicador à parte.
+ */
+export type CeoStageKey = 'novos' | 'frios' | 'atendimento' | 'cotacao' | 'negociacao' | 'vendas';
+
+export const CEO_STAGES: ReadonlyArray<{ key: CeoStageKey; label: string }> = [
+  { key: 'novos', label: 'Novos leads' },
+  { key: 'frios', label: 'Leads frios' },
+  { key: 'atendimento', label: 'Em atendimento' },
+  { key: 'cotacao', label: 'Em cotação' },
+  { key: 'negociacao', label: 'Em negociação' },
+  { key: 'vendas', label: 'Vendas' },
+];
+
+export function ceoStageOf(stage: string): CeoStageKey | 'perdidos' {
+  switch (stageKind(stage)) {
+    case 'perdido':
+      return 'perdidos';
+    case 'ganho':
+    case 'pago':
+      return 'vendas';
+    case 'negociacao':
+    case 'quente':
+      return 'negociacao';
+    case 'cotacao':
+      return 'cotacao';
+    case 'atendimento':
+      return 'atendimento';
+    default:
+      return (stage || '').toLowerCase().includes('frio') ? 'frios' : 'novos';
+  }
+}
+
+export function ceoStageLabel(stage: string): string {
+  const key = ceoStageOf(stage);
+  if (key === 'perdidos') return 'Perdido';
+  return CEO_STAGES.find((s) => s.key === key)?.label ?? stage;
+}
+
+export type CeoStage = {
+  key: CeoStageKey;
+  label: string;
+  count: number;
+  /** R$ somado dos cards da etapa. Em Vendas, já com a regra ×3. */
+  value: number;
+  /** Fração (0–1) sobre o total de leads do recorte. */
+  share: number;
+};
+
+export type CeoSummary = {
+  total: number;
+  stages: CeoStage[];
+  perdidos: { count: number; share: number };
+  /** Leads ainda abertos: tudo que não é venda nem perdido. */
+  emAndamento: number;
+  vendas: number;
+  /** R$ das vendas (regra ×3 aplicada). */
+  vendasValor: number;
+  /** R$ em jogo agora: cotação + negociação (inclui quentes). */
+  volumeNegociacao: number;
+  /** Quantos cards de cotação/negociação têm valor informado. */
+  comValor: number;
+  emNegociacao: number;
+  /** vendas ÷ total (0–1); null sem leads. */
+  conversao: number | null;
+};
+
+/**
+ * Resumo do painel do CEO. Com `period`, considera só os leads que ENTRARAM no
+ * CRM na janela (`entryDate`) e o estágio em que estão hoje, igual ao funil da
+ * aba executiva. `null` = "Tudo": o board inteiro.
+ */
+export function ceoSummary(cards: PlanoCard[], period: Period | null): CeoSummary {
+  const list = period ? cardsInPeriod(cards, period) : cards;
+  const acc = new Map<CeoStageKey, { count: number; value: number }>(
+    CEO_STAGES.map((s) => [s.key, { count: 0, value: 0 }]),
+  );
+  let perdidos = 0;
+  let comValor = 0;
+  for (const c of list) {
+    const key = ceoStageOf(c.stage);
+    if (key === 'perdidos') {
+      perdidos += 1;
+      continue;
+    }
+    const slot = acc.get(key) as { count: number; value: number };
+    slot.count += 1;
+    slot.value += c.value || 0;
+    if ((key === 'cotacao' || key === 'negociacao') && (c.value || 0) > 0) comValor += 1;
+  }
+  const vendasSlot = acc.get('vendas') as { count: number; value: number };
+  vendasSlot.value *= FECHAMENTO_VALUE_FACTOR;
+
+  const total = list.length;
+  const share = (n: number) => (total > 0 ? n / total : 0);
+  const stages = CEO_STAGES.map(({ key, label }) => {
+    const { count, value } = acc.get(key) as { count: number; value: number };
+    return { key, label, count, value, share: share(count) };
+  });
+  const cotacao = acc.get('cotacao') as { count: number; value: number };
+  const negociacao = acc.get('negociacao') as { count: number; value: number };
+  const vendas = vendasSlot.count;
+  return {
+    total,
+    stages,
+    perdidos: { count: perdidos, share: share(perdidos) },
+    emAndamento: total - vendas - perdidos,
+    vendas,
+    vendasValor: vendasSlot.value,
+    volumeNegociacao: cotacao.value + negociacao.value,
+    comValor,
+    emNegociacao: cotacao.count + negociacao.count,
+    conversao: total > 0 ? vendas / total : null,
+  };
+}
+
+/**
+ * Só o primeiro nome, para a tabela pública (sem login) não expor nome completo.
+ * Nome vazio, sem letras, ou que pareça contato (telefone/e-mail) vira "Sem nome".
+ */
+export function firstName(name: string | null | undefined): string {
+  const first = (name || '').trim().split(/\s+/)[0] ?? '';
+  // Sem letra, ou com dígito/@ (telefone, "5511…@c.us", e-mail): não é nome, e
+  // exibir isso vazaria contato numa página pública.
+  if (!/\p{L}/u.test(first) || /[\d@]/.test(first)) return 'Sem nome';
+  return first.charAt(0).toLocaleUpperCase('pt-BR') + first.slice(1).toLocaleLowerCase('pt-BR');
+}
+
+export type RecentMove = {
+  firstName: string;
+  stage: string;
+  stageKey: CeoStageKey | 'perdidos';
+  /** Valor real do card (sem a regra ×3, como no Kanban). */
+  value: number;
+  /** ISO da entrada do lead no CRM. */
+  entrada: string;
+  /** ISO da última movimentação. */
+  ultima: string;
+};
+
+/**
+ * Últimas movimentações do recorte, da mais recente para a mais antiga. Devolve
+ * só campos não identificáveis (primeiro nome, etapa, valor, datas): nem nome
+ * completo, nem id de conversa.
+ */
+export function recentMoves(cards: PlanoCard[], period: Period | null, n = 12): RecentMove[] {
+  const list = period ? cardsInPeriod(cards, period) : cards;
+  return [...list]
+    .sort((a, b) => (b.eventDate || '').localeCompare(a.eventDate || ''))
+    .slice(0, n)
+    .map((c) => ({
+      firstName: firstName(c.name),
+      stage: ceoStageLabel(c.stage),
+      stageKey: ceoStageOf(c.stage),
+      value: c.value || 0,
+      entrada: entryDate(c) || '',
+      ultima: c.eventDate || '',
+    }));
+}
+
+/** Data de entrada mais antiga do board (YYYY-MM-DD), para o "Tudo" da mídia. */
+export function earliestEntry(cards: PlanoCard[]): string | null {
+  let min: string | null = null;
+  for (const c of cards) {
+    const d = (entryDate(c) || '').slice(0, 10);
+    if (d && (!min || d < min)) min = d;
+  }
+  return min;
+}

@@ -309,6 +309,14 @@ Sombras existem em **um único caso**: floating UI que precisa descolar visualme
 - **Tooltip:** `bg: Soft Ink`, borda 1px `Hairline Sepia`, `rounded-md`, font 12px, label da data em pt-BR.
 - **Cursor on hover:** retângulo translúcido `Lifted Charcoal` com 50% alpha.
 
+### Painel do CEO (signature, desde 03/11/2026)
+
+- **Hero funnel** (`components/ceo/hero-funnel.tsx`): um container `Soft Ink`, `rounded-2xl`. Topo com 3 destaques de pesos diferentes: leads (cream, 60px) à esquerda, volume em negociação (sienna, até 72px) no centro, conversão em vendas (olive) à direita. Abaixo, uma linha por etapa: rótulo + "R$ · % dos leads", barra de 36px com trilho `Lifted Charcoal`, contagem à direita. Largura da barra = participação no total (honesta, não relativa ao maior).
+- **Cores das etapas:** topo neutro (Warm Ash `#b0a89c`, frios `#6f675d`), trabalho do time esquenta (teal → peach → sienna), venda em olive, perdido em rose. Mesmas cores nos pontos da tabela.
+- **Stat strip** (`stat-strip.tsx`): uma faixa única com células separadas por fios 1px `Hairline Sepia`, não cinco cards soltos.
+- **Period pills** (`period-pills.tsx`): grupo pílula `Soft Ink`; ativo em cream sobre ink. Datas livres em `input[type=date]` com `color-scheme: dark`.
+- **Dado pessoal:** a página é pública; tabela mostra só primeiro nome.
+
 ## 6. Do's and Don'ts
 
 ### Do:

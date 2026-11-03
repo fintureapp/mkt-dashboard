@@ -7,8 +7,6 @@
 | `META_ACCESS_TOKEN` | `src/lib/env.ts`, `src/lib/meta-api.ts`, `scripts/discover-actions.ts` | local, staging, production | Sim | Token Meta Marketing API (`ads_read`). Preferir system-user token (não expira). |
 | `META_AD_ACCOUNT_ID` | `src/lib/env.ts`, `src/lib/meta-api.ts` | local, staging, production | Sim | ID numérico da conta, sem prefixo `act_`. Identificador de config (não é credencial). |
 | `META_GRAPH_API_VERSION` | `src/lib/env.ts` | local, staging, production | Não | Default `v21.0`. |
-| `BASIC_AUTH_USER` | `src/middleware.ts` | local, staging, production | Sim | Usuário do basic auth do app. |
-| `BASIC_AUTH_PASS` | `src/middleware.ts` | local, staging, production | Sim | Senha forte (mín. 8 chars). |
 | `PLANO_SAUDE_SNAPSHOT_URL` | `src/lib/plano-saude.ts` | local, staging, production | Não | URL do snapshot do funil de plano de saúde. |
 | `CHATWOOT_BASE_URL` | integração Chatwoot | local, staging, production | Não | Base URL da instância Chatwoot. |
 | `CHATWOOT_ACCOUNT_ID` | integração Chatwoot | local, staging, production | Não | ID da conta Chatwoot. |

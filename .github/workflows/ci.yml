@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -36,6 +36,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Test
+        run: npm test
+
       - name: Build
         run: npm run build
         env:
@@ -44,5 +47,3 @@ jobs:
           META_ACCESS_TOKEN: dummy_token_for_ci_only_min_20_chars
           META_AD_ACCOUNT_ID: "0"
           META_GRAPH_API_VERSION: v21.0
-          BASIC_AUTH_USER: ci
-          BASIC_AUTH_PASS: ci_dummy_pass

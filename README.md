@@ -2,63 +2,73 @@
 
 ## Objetivo
 
-Painel interno (BI) de KPIs de marketing de performance da **Meta Ads** para a
-Criteria Seguros, com identidade visual Finture. Agrega investimento, leads,
-CPL, conversões e tendência por campanha / conjunto / anúncio, além de um
-recorte do funil de Plano de Saúde. Construído em Next.js 16 + React 19 e
-deployado no Vercel.
+Painel do **CEO** para o funil comercial do **Plano de Saúde** (Criteria PME),
+com identidade visual Finture. Uma página só, pensada para ser lida em segundos:
+quantos leads chegaram, quanto está em negociação, quanto virou venda, onde os
+leads estão agora e quanto a mídia custou por venda. Next.js 16 + React 19, no Vercel.
 
 ## Contexto
 
-Projeto de **marketing / dados / analytics interno**. Consome a Graph API da
-Meta (Marketing API) para montar dashboards de mídia paga e tracking de funil.
-Não é um produto público: fica atrás de basic auth e é usado pelo time interno
-para acompanhar performance de campanhas e geração de leads.
+Lê o snapshot do CRM (Kanban do Chatwoot, gravado por um coletor externo) e o
+investimento da conta Meta Ads. **Não tem login**: a página é pública para quem
+tiver a URL, não é indexada (noindex) e **não mostra dado pessoal** (só o
+primeiro nome do lead; telefone, e-mail e sobrenome nunca saem do servidor).
+
+### O que a página mostra
+
+- **Período:** Tudo / Hoje / 7 dias / 30 dias (padrão) ou intervalo livre (de/até).
+  Fica na URL (`?p=7d`, `?since=AAAA-MM-DD&until=AAAA-MM-DD`). O recorte é pela
+  data de **entrada** do lead no CRM; a etapa é a de agora.
+- **Destaques:** leads que chegaram · volume em negociação (R$ das propostas em
+  cotação + negociação) · conversão em vendas.
+- **Funil em 6 etapas** (agrupa as colunas do CRM por palavra-chave, ver
+  `ceoStageOf` em `src/lib/plano-saude.ts`):
+
+  | Etapa | Colunas do CRM |
+  |---|---|
+  | Novos leads | Novos Leads, Validação de Dados |
+  | Leads frios | Leads Frios - Segunda Validação |
+  | Em atendimento | Necessita Atendimento |
+  | Em cotação | Enviado para Cotação, Atendimento Humano / Em Cotação |
+  | Em negociação | Negociação, Negociações quentes |
+  | Vendas | Fechado - Ganho, Boleto pago (valor ×3, regra do negócio) |
+
+  "Fechado - Perdido" aparece à parte, no indicador **Perdidos**.
+- **Indicadores:** em andamento · vendas · perdidos · investimento em mídia
+  (Meta, mesmo período) · custo por venda.
+- **Últimas movimentações:** 12 cards mais recentes (primeiro nome, etapa, valor real do card, datas).
 
 ## Estrutura do projeto
 
 ```
 src/
 ├── app/
-│   ├── (dashboard)/            # route group, layout compartilhado
-│   │   ├── layout.tsx          # header + footer
-│   │   ├── page.tsx            # / (overview)
-│   │   ├── campanhas/page.tsx
-│   │   ├── conjuntos/page.tsx
-│   │   ├── anuncios/page.tsx
-│   │   ├── plano-saude/page.tsx        # Visão Geral (funil de valor)
-│   │   ├── plano-saude/kanban/page.tsx # Kanban por estágio (read-only)
-│   │   ├── error.tsx           # error boundary
-│   │   ├── loading.tsx         # skeleton
-│   │   └── _lib/level-page.tsx # helper das páginas de nível
-│   ├── publico/[token]/page.tsx # link público (sem login) da Visão Geral
-│   ├── actions/refresh.ts      # Server Action: updateTag('meta:insights')
-│   ├── layout.tsx
+│   ├── page.tsx                # a página do CEO (única rota)
+│   ├── actions/refresh.ts      # Server Action do botão Atualizar
+│   ├── layout.tsx              # fontes + metadata (noindex)
 │   └── globals.css             # tokens Finture (Tailwind v4)
 ├── components/
 │   ├── ui/                     # primitivas shadcn/ui
-│   ├── kpi-card.tsx · insights-table.tsx · trend-chart.tsx · sparkline.tsx
-│   ├── funnel-pipeline.tsx · kanban-board.tsx · plano-saude-tabs.tsx
-│   ├── overview-report.tsx     # corpo da Visão Geral (usado por / e /publico)
-│   ├── period-selector.tsx · refresh-button.tsx · header*.tsx · footer.tsx
+│   └── ceo/                    # hero-funnel · stat-strip · recent-table · period-pills · refresh-button
 └── lib/
+    ├── plano-saude.ts          # snapshot do CRM + ceoSummary / recentMoves / firstName
+    ├── plano-saude.test.ts     # testes (node:test)
+    ├── ceo-period.ts           # Tudo / Hoje / 7d / 30d / intervalo livre
     ├── meta-api.ts             # cliente Graph com 'use cache'
-    ├── meta-types.ts           # schemas Zod
-    ├── kpi-calc.ts             # derivações (CPL, ROAS, ROI, ConvRate)
-    ├── period.ts               # período + comparação anterior
-    ├── conversion-mapping.ts   # action_type -> KPI
-    ├── plano-saude.ts          # snapshot do funil de plano de saúde
-    ├── format.ts · env.ts · utils.ts
+    ├── kpi-calc.ts · meta-types.ts · conversion-mapping.ts · period.ts
+    └── format.ts · env.ts · utils.ts
 
-src/middleware.ts               # basic auth (Edge runtime)
 scripts/discover-actions.ts     # descobre action_types da conta
 docs/                           # SECRETS.md, GITHUB_SETTINGS.md, DECISIONS.md
-.github/                        # CI, CODEOWNERS, PR template, dependabot
 ```
+
+As telas antigas (Visão Geral Meta, Campanhas, Conjuntos, Anúncios, abas do
+Plano de Saúde, Consórcio, link público e basic auth) foram removidas na
+repaginação; continuam no histórico do Git (commit `chore: versiona WIP pendente`).
 
 ## Como rodar localmente
 
-Pré-requisitos: Node 20+, npm, e um token da Meta Marketing API (`ads_read`).
+Pré-requisitos: Node 22.6+ (CI e Vercel usam 24), npm, e um token da Meta Marketing API (`ads_read`).
 Detalhes da geração do token estão em **Pré-requisitos manuais** abaixo.
 
 ```bash
@@ -67,30 +77,8 @@ cp .env.example .env.local   # preencha os valores (NUNCA commite .env.local)
 npm run dev
 ```
 
-Abra http://localhost:3000 → o browser pede basic auth → entre com
-`BASIC_AUTH_USER` / `BASIC_AUTH_PASS` → o dashboard carrega.
-
-### Link público da Visão Geral (sem login)
-
-Para compartilhar **apenas a Visão Geral** com terceiros (ex.: agência de mídia)
-sem exigir login, existe a rota `/publico/<token>`:
-
-- O acesso é por um **token secreto na URL** (`PUBLIC_SHARE_TOKEN`). O link é a
-  chave — quem tiver a URL vê os números (investimento, ROI, campanhas). A página
-  é **read-only**, **não indexável** (noindex) e não dá acesso às outras abas.
-- **Fail-closed:** sem `PUBLIC_SHARE_TOKEN` configurado (ou com token errado), a
-  rota cai no basic auth normal. Nada é exposto por acidente.
-- **Revogar:** troque o valor de `PUBLIC_SHARE_TOKEN` — o link antigo para de
-  funcionar na hora.
-
-Gerar um token forte:
-
-```bash
-node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))"
-```
-
-Defina em `.env.local` (dev) e nas env vars do Vercel (produção). O link fica
-`https://<seu-domínio>/publico/<token>`.
+Abra http://localhost:3000 (sem login). Em dev, sem `PLANO_SAUDE_SNAPSHOT_URL`,
+o CRM é lido de `plano-saude-snapshot.json` na raiz (ignorado pelo Git).
 
 ### Pré-requisitos manuais (token Meta)
 
@@ -114,7 +102,7 @@ npx tsx scripts/discover-actions.ts
 |---|---|
 | Instalar dependências | `npm install` |
 | Rodar localmente | `npm run dev` |
-| Rodar testes | Ainda não configurado |
+| Rodar testes | `npm test` (node:test, Node 22.6+) |
 | Rodar lint | `npm run lint` (Biome) |
 | Formatar | `npm run format` |
 | Lint + format autofix | `npm run check` |
@@ -146,7 +134,7 @@ está em [`docs/SECRETS.md`](docs/SECRETS.md).
 - Trabalhar sempre em **branch**, nunca direto na `main`.
 - Abrir **Pull Request** e exigir **revisão humana** antes do merge.
 - **Sem push direto na `main`** (protegida por ruleset — ver [`docs/GITHUB_SETTINGS.md`](docs/GITHUB_SETTINGS.md)).
-- Rodar lint / typecheck / build antes do PR (testes quando existirem).
+- Rodar lint / typecheck / test / build antes do PR.
 - Atualizar a documentação quando mudar comportamento relevante.
 
 Política completa em [`SECURITY.md`](SECURITY.md).
@@ -158,8 +146,8 @@ Deploy no **Vercel** (App Router + Cache Components). O modelo de cache usa
 "Atualizar" dispara a Server Action `refreshInsights()` → `updateTag(...)`.
 Configurar as env vars de Production/Preview no painel do Vercel:
 `META_ACCESS_TOKEN`, `META_AD_ACCOUNT_ID`, `META_GRAPH_API_VERSION`,
-`BASIC_AUTH_USER`, `BASIC_AUTH_PASS` (+ Chatwoot / plano-saúde se usados,
-+ `PUBLIC_SHARE_TOKEN` se o link público da Visão Geral estiver em uso).
+`PLANO_SAUDE_SNAPSHOT_URL`. `BASIC_AUTH_*`, `PUBLIC_SHARE_TOKEN` e `CONSORCIO_*`
+não são mais lidas e podem ser apagadas do Vercel.
 
 Não há cron / job agendado identificado neste setup inicial.
 
@@ -168,7 +156,7 @@ Não há cron / job agendado identificado neste setup inicial.
 1. Criar issue.
 2. Criar branch (`feat/...`, `fix/...`, `chore/...`).
 3. Alterar código (mudanças pequenas e revisáveis).
-4. Rodar lint / typecheck / build (e testes quando existirem).
+4. Rodar lint / typecheck / test / build.
 5. Abrir PR usando o template.
 6. Revisar (humano).
 7. Fazer merge.
